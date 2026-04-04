@@ -1,0 +1,3907 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <style>
+      /* ═══ iOS SYSTEM TOKENS ═══ */
+      :root {
+        /* System Colors */
+        --sys-blue: #007aff;
+        --sys-blue-dark: #0062cc;
+        --sys-blue-tint: rgba(0, 122, 255, 0.1);
+        --sys-green: #34c759;
+        --sys-red: #ff3b30;
+        --sys-orange: #ff9500;
+        --sys-yellow: #ffcc00;
+        --sys-teal: #5ac8fa;
+
+        /* Backgrounds */
+        --bg-primary: #f2f2f7;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #f2f2f7;
+        --bg-grouped: #f2f2f7;
+        --bg-elevated: #ffffff;
+        --bg-nav: rgba(249, 249, 249, 0.94);
+
+        /* Labels */
+        --label-primary: #000000;
+        --label-secondary: rgba(60, 60, 67, 0.6);
+        --label-tertiary: rgba(60, 60, 67, 0.3);
+        --label-quaternary: rgba(60, 60, 67, 0.18);
+
+        /* Fills */
+        --fill-primary: rgba(120, 120, 128, 0.2);
+        --fill-secondary: rgba(120, 120, 128, 0.16);
+        --fill-tertiary: rgba(118, 118, 128, 0.12);
+        --fill-quaternary: rgba(116, 116, 128, 0.08);
+
+        /* Separators */
+        --sep-opaque: #c6c6c8;
+        --sep-transparent: rgba(60, 60, 67, 0.29);
+
+        /* Dark surfaces */
+        --dark-bg1: #1c1c1e;
+        --dark-bg2: #2c2c2e;
+        --dark-bg3: #3a3a3c;
+        --dark-bg4: #48484a;
+
+        /* Grays */
+        --gray1: #8e8e93;
+        --gray2: #aeaeb2;
+        --gray3: #c7c7cc;
+        --gray4: #d1d1d6;
+        --gray5: #e5e5ea;
+        --gray6: #f2f2f7;
+
+        /* Radii */
+        --r-xs: 6px;
+        --r-sm: 10px;
+        --r-md: 13px;
+        --r-lg: 16px;
+        --r-xl: 20px;
+        --r-2xl: 26px;
+
+        /* Blur */
+        --blur-nav: blur(20px) saturate(180%);
+
+        /* Shadows */
+        --shadow-sm:
+          0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-md:
+          0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.05);
+        --shadow-lg:
+          0 12px 40px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.07);
+        --shadow-xl:
+          0 24px 80px rgba(0, 0, 0, 0.22), 0 8px 24px rgba(0, 0, 0, 0.1);
+
+        /* Nav bar */
+        --navbar-h: 44px;
+        --font:
+          -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+          "Helvetica Neue", Arial, sans-serif;
+      }
+
+      /* ═══ RESET ═══ */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        font-family: var(--font);
+        font-size: 17px;
+        color: var(--label-primary);
+        background: var(--bg-grouped);
+        -webkit-text-size-adjust: 100%;
+      }
+
+      /* ═══════════════════════════════
+         MAP PANE (LEFT)
+      ═══════════════════════════════ */
+      #map-pane {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--bg-secondary);
+        border-right: 0.5px solid var(--sep-opaque);
+        flex-shrink: 0;
+      }
+
+      /* Navigation Bar */
+      #map-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: var(--navbar-h);
+        height: auto;
+        padding: 6px 16px;
+        background: var(--bg-nav);
+        backdrop-filter: var(--blur-nav);
+        -webkit-backdrop-filter: var(--blur-nav);
+        border-bottom: 0.5px solid var(--sep-transparent);
+        gap: 10px;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 10;
+      }
+      #map-header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      #store-name {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--label-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        line-height: 1.2;
+      }
+      #store-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--fill-tertiary);
+        border: none;
+        border-radius: 8px;
+        padding: 3px 8px 3px 10px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--label-primary);
+        letter-spacing: -0.24px;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: background 0.12s ease;
+        max-width: 200px;
+      }
+      #store-toggle:active {
+        background: var(--gray5);
+      }
+      #store-toggle .chevron {
+        font-size: 10px;
+        color: var(--gray1);
+        flex-shrink: 0;
+      }
+      #store-toggle .store-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* Store picker dropdown */
+      #store-picker {
+        display: none;
+        position: absolute;
+        top: calc(var(--navbar-h) + 4px);
+        left: 16px;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(40px) saturate(200%);
+        -webkit-backdrop-filter: blur(40px) saturate(200%);
+        border: 0.5px solid rgba(60, 60, 67, 0.18);
+        border-radius: var(--r-lg);
+        box-shadow:
+          0 8px 40px rgba(0, 0, 0, 0.16),
+          0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 5px;
+        min-width: 220px;
+        font-family: var(--font);
+      }
+      #store-picker.open {
+        display: block;
+      }
+      .store-opt {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 12px;
+        border-radius: var(--r-sm);
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--label-primary);
+        cursor: pointer;
+        letter-spacing: -0.24px;
+        transition: background 0.08s ease;
+        gap: 8px;
+      }
+      .store-opt:active {
+        background: var(--fill-tertiary);
+      }
+      .store-opt.active {
+        font-weight: 700;
+      }
+      .store-opt .check {
+        color: var(--sys-blue);
+        font-size: 13px;
+      }
+      .store-opt-sep {
+        height: 0.5px;
+        background: var(--sep-transparent);
+        margin: 3px 0;
+      }
+      .store-add-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 12px;
+        border-radius: var(--r-sm);
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--sys-blue);
+        cursor: pointer;
+        letter-spacing: -0.24px;
+        transition: background 0.08s ease;
+        border: none;
+        background: none;
+        width: 100%;
+        font-family: var(--font);
+        text-align: left;
+      }
+      .store-add-btn:active {
+        background: var(--fill-tertiary);
+      }
+      #map-header-right {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        position: relative;
+      }
+      #dot-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(40px) saturate(200%);
+        -webkit-backdrop-filter: blur(40px) saturate(200%);
+        border: 0.5px solid rgba(60, 60, 67, 0.18);
+        border-radius: var(--r-lg);
+        box-shadow:
+          0 8px 40px rgba(0, 0, 0, 0.16),
+          0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 5px;
+        min-width: 180px;
+        z-index: 100;
+        font-family: var(--font);
+      }
+      #dot-menu.open {
+        display: block;
+      }
+      .dot-menu-item {
+        padding: 11px 14px;
+        border-radius: var(--r-sm);
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--label-primary);
+        cursor: pointer;
+        letter-spacing: -0.24px;
+        transition: background 0.08s ease;
+      }
+      .dot-menu-item:active {
+        background: var(--fill-tertiary);
+      }
+      .dot-menu-sep {
+        height: 0.5px;
+        background: var(--sep-transparent);
+        margin: 3px 0;
+      }
+
+      /* Nav Buttons — iOS pill style */
+      .hdr-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0 14px;
+        height: 32px;
+        border-radius: 980px;
+        border: none;
+        background: var(--fill-tertiary);
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--sys-blue);
+        cursor: pointer;
+        font-family: var(--font);
+        letter-spacing: -0.24px;
+        transition: opacity 0.12s ease;
+        white-space: nowrap;
+      }
+      .hdr-btn:active {
+        opacity: 0.5;
+      }
+      .hdr-btn.navy {
+        background: var(--sys-blue);
+        color: #fff;
+      }
+      .hdr-btn.navy:active {
+        background: var(--sys-blue-dark);
+        opacity: 1;
+      }
+
+      /* SVG scroll area */
+      #map-svg-wrap {
+        flex: 1;
+        overflow: auto;
+        padding: 12px;
+        background: #f7f7f9;
+      }
+      #map-svg-wrap::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      #map-svg-wrap::-webkit-scrollbar-thumb {
+        background: var(--gray4);
+        border-radius: 4px;
+      }
+
+      /* ═══════════════════════════════
+         DETAIL PANE (RIGHT)
+      ═══════════════════════════════ */
+      #detail-pane {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-grouped);
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* ═══ EMPTY STATE ═══ */
+      #empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 32px;
+      }
+      #empty-state .empty-icon {
+        width: 76px;
+        height: 76px;
+        border-radius: 22px;
+        background: linear-gradient(145deg, #e8ecf1, #d8dde5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+        box-shadow:
+          0 2px 8px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        margin-bottom: 4px;
+      }
+      #empty-state .empty-label {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--label-primary);
+        letter-spacing: -0.45px;
+      }
+      #empty-state .empty-sub {
+        font-size: 15px;
+        color: var(--label-secondary);
+        text-align: center;
+        max-width: 240px;
+        line-height: 1.45;
+        letter-spacing: -0.24px;
+      }
+
+      /* ═══ RACK PANEL ═══ */
+      #rack-panel {
+        display: none;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+      }
+      #rack-panel.open {
+        display: flex;
+      }
+      .rk {
+        cursor: pointer;
+      }
+      .rk rect {
+        transition: opacity 0.12s ease;
+      }
+      .rk:hover rect {
+        opacity: 0.76;
+      }
+
+      /* ═══ MODAL BOX (rack detail) ═══ */
+      #modal-box {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        height: 100%;
+        background: var(--bg-grouped);
+      }
+
+      /* Navigation Bar in detail panel */
+      #modal-header {
+        height: var(--navbar-h);
+        padding: 0 12px 0 14px;
+        border-bottom: 0.5px solid var(--sep-transparent);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+        background: var(--bg-nav);
+        backdrop-filter: var(--blur-nav);
+        -webkit-backdrop-filter: var(--blur-nav);
+        position: relative;
+        z-index: 10;
+      }
+
+      /* Squircle icon */
+      #modal-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      #modal-header-text {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #modal-title {
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--label-primary);
+        letter-spacing: -0.41px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #modal-zone {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 980px;
+        display: inline-block;
+        letter-spacing: -0.08px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* Close button (x mark circle) */
+      #modal-close {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: none;
+        background: var(--fill-tertiary);
+        font-size: 12px;
+        cursor: pointer;
+        color: var(--gray1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-weight: 700;
+        transition: background 0.1s ease;
+        line-height: 1;
+      }
+      #modal-close:active {
+        background: var(--gray4);
+      }
+
+      /* ═══ TOOLBAR ═══ */
+      #modal-toolbar {
+        padding: 8px 14px;
+        border-bottom: 0.5px solid var(--sep-transparent);
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-shrink: 0;
+        background: var(--bg-nav);
+        backdrop-filter: var(--blur-nav);
+        -webkit-backdrop-filter: var(--blur-nav);
+      }
+      .toolbar-btn {
+        padding: 0 13px;
+        height: 30px;
+        border-radius: 980px;
+        border: none;
+        background: var(--fill-tertiary);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--sys-blue);
+        cursor: pointer;
+        font-family: var(--font);
+        letter-spacing: -0.08px;
+        transition: opacity 0.12s ease;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+      }
+      .toolbar-btn:active {
+        opacity: 0.5;
+      }
+      .toolbar-btn.primary {
+        background: var(--sys-blue);
+        color: #fff;
+      }
+      .toolbar-btn.primary:active {
+        background: var(--sys-blue-dark);
+        opacity: 1;
+      }
+
+      #modal-slot-count {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--label-secondary);
+        font-weight: 500;
+        letter-spacing: -0.08px;
+        background: var(--fill-tertiary);
+        padding: 0 10px;
+        height: 26px;
+        line-height: 26px;
+        border-radius: 980px;
+      }
+
+      /* ═══ SHELF WRAP ═══ */
+      #modal-shelf-wrap {
+        flex: 1;
+        overflow-y: auto;
+        padding: 14px 14px 20px;
+        background: var(--bg-grouped);
+        -webkit-overflow-scrolling: touch;
+      }
+      #modal-shelf-wrap::-webkit-scrollbar {
+        width: 4px;
+      }
+      #modal-shelf-wrap::-webkit-scrollbar-thumb {
+        background: var(--gray4);
+        border-radius: 4px;
+      }
+
+      /* ═══ SHELF UNIT ═══ */
+      .shelf-unit {
+        background: var(--bg-elevated);
+        border-radius: var(--r-lg);
+        margin-bottom: 10px;
+        overflow: hidden;
+        border: 0.5px solid var(--sep-opaque);
+      }
+      .shelf-unit-header {
+        background: var(--bg-secondary);
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 0.5px solid var(--sep-transparent);
+      }
+      .shelf-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--label-primary);
+        letter-spacing: -0.08px;
+        flex-shrink: 0;
+      }
+      .shelf-checks {
+        display: flex;
+        gap: 6px;
+        flex: 1;
+      }
+      .shelf-chk {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0 10px 0 7px;
+        height: 26px;
+        border-radius: 980px;
+        border: 1px solid var(--sep-opaque);
+        background: var(--bg-grouped);
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.15s ease;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--label-secondary);
+        flex-shrink: 0;
+        font-family: var(--font);
+        letter-spacing: -0.08px;
+      }
+      .shelf-chk:active {
+        opacity: 0.65;
+      }
+      .shelf-chk.on {
+        background: rgba(52, 199, 89, 0.1);
+        border-color: rgba(52, 199, 89, 0.4);
+        color: #1a7a36;
+      }
+      .shelf-chk-box {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1.5px solid var(--gray4);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 8px;
+        color: transparent;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
+      }
+      .shelf-chk.on .shelf-chk-box {
+        background: #30d158;
+        border-color: #30d158;
+        color: #fff;
+      }
+      .shelf-del-btn {
+        background: none;
+        border: none;
+        font-size: 13px;
+        color: var(--gray3);
+        cursor: pointer;
+        border-radius: 6px;
+        flex-shrink: 0;
+        margin-left: auto;
+        line-height: 1;
+        transition: color 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+      }
+      .shelf-del-btn:active {
+        color: var(--sys-red);
+      }
+
+      .shelf-body {
+        padding: 10px 12px 12px;
+        background: var(--bg-grouped);
+      }
+      .shelf-plank {
+        height: 2px;
+        background: var(--gray4);
+        border-radius: 2px;
+        margin-bottom: 8px;
+        opacity: 0.4;
+      }
+      .shelf-slots {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        align-items: flex-end;
+        padding-bottom: 2px;
+      }
+      .shelf-slots::-webkit-scrollbar {
+        height: 3px;
+      }
+      .shelf-slots::-webkit-scrollbar-thumb {
+        background: var(--gray4);
+        border-radius: 2px;
+      }
+
+      /* ═══ PRODUCT SLOT ═══ */
+      .product-slot {
+        background: #fff;
+        border: 1px solid var(--gray5);
+        border-radius: var(--r-md);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition:
+          transform 0.1s ease,
+          box-shadow 0.1s ease;
+        flex-shrink: 0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+      .product-slot:active {
+        transform: scale(0.95);
+      }
+      .product-slot.filled {
+        border-color: var(--gray4);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .prod-color {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+      }
+      .prod-img {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        object-fit: cover;
+        display: block;
+      }
+      .prod-name {
+        font-size: 8px;
+        color: var(--label-primary);
+        font-weight: 600;
+        line-height: 1.2;
+        text-align: center;
+        padding: 3px 3px 1px;
+        word-break: break-word;
+        flex-shrink: 0;
+        letter-spacing: -0.08px;
+      }
+      .prod-plu {
+        font-size: 7px;
+        color: var(--gray1);
+        text-align: center;
+        padding: 0 3px 1px;
+        font-family: "SF Mono", ui-monospace, monospace;
+        flex-shrink: 0;
+      }
+      .prod-desc {
+        font-size: 7px;
+        color: var(--gray1);
+        text-align: center;
+        padding: 0 3px 1px;
+        line-height: 1.2;
+        word-break: break-word;
+        flex-shrink: 0;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+      }
+      .prod-barcode-mini {
+        width: 100%;
+        padding: 1px 3px 2px;
+        cursor: pointer;
+        display: block;
+        flex-shrink: 0;
+        background: var(--bg-secondary);
+        box-sizing: border-box;
+      }
+      .prod-barcode-mini canvas {
+        width: 100% !important;
+        height: 18px !important;
+        display: block;
+      }
+      .prod-barcode-mini:active {
+        background: var(--fill-tertiary);
+      }
+      .prod-empty-label {
+        font-size: 9px;
+        color: var(--gray4);
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+      }
+
+      /* ═══ ADD ROW BUTTON ═══ */
+      .modal-add-row-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        padding: 13px;
+        background: transparent;
+        border: 1.5px dashed var(--gray4);
+        border-radius: var(--r-md);
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--sys-blue);
+        cursor: pointer;
+        margin-top: 2px;
+        transition: opacity 0.12s ease;
+        font-family: var(--font);
+        letter-spacing: -0.24px;
+      }
+      .modal-add-row-btn:active {
+        opacity: 0.5;
+      }
+
+      /* ═══ CONTEXT MENU (iOS action menu) ═══ */
+      #ctx-menu {
+        display: none;
+        position: absolute;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(40px) saturate(200%);
+        -webkit-backdrop-filter: blur(40px) saturate(200%);
+        border: 0.5px solid rgba(60, 60, 67, 0.18);
+        border-radius: var(--r-lg);
+        box-shadow:
+          0 8px 40px rgba(0, 0, 0, 0.18),
+          0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 5px;
+        min-width: 200px;
+        font-family: var(--font);
+      }
+      #ctx-menu.open {
+        display: block;
+      }
+      .ctx-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 12px;
+        border-radius: var(--r-sm);
+        font-size: 17px;
+        font-weight: 400;
+        color: var(--label-primary);
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.08s ease;
+        letter-spacing: -0.41px;
+      }
+      .ctx-item:active {
+        background: var(--fill-tertiary);
+      }
+      .ctx-item.danger {
+        color: var(--sys-red);
+      }
+      .ctx-sep {
+        height: 0.5px;
+        background: var(--sep-transparent);
+        margin: 3px 0;
+      }
+      .ctx-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--label-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 6px 12px 3px;
+      }
+      .ctx-shapes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        padding: 4px 5px 6px;
+      }
+      .ctx-shape-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        background: var(--fill-quaternary);
+        border: 1.5px solid var(--gray5);
+        border-radius: var(--r-sm);
+        padding: 7px 4px 5px;
+        cursor: pointer;
+        transition: all 0.1s ease;
+      }
+      .ctx-shape-btn:active {
+        opacity: 0.65;
+      }
+      .ctx-shape-btn.active {
+        border-color: var(--sys-blue);
+        background: var(--sys-blue-tint);
+      }
+      .ctx-shape-btn .sp {
+        background: rgba(0, 122, 255, 0.18);
+        border-radius: 3px;
+        border: 1px solid rgba(0, 122, 255, 0.3);
+      }
+      .ctx-shape-btn .sl {
+        font-size: 9px;
+        font-weight: 500;
+        color: var(--label-secondary);
+        white-space: nowrap;
+        letter-spacing: -0.08px;
+      }
+
+      /* ═══ RECAP PANEL (iOS Bottom Sheet) ═══ */
+      #recap-panel {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 40;
+        align-items: flex-end;
+        justify-content: center;
+      }
+      #recap-panel.open {
+        display: flex;
+      }
+
+      #recap-box {
+        background: var(--bg-secondary);
+        border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+        width: 100%;
+        max-height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        font-family: var(--font);
+        position: relative;
+      }
+
+      /* Drag handle indicator */
+      #recap-box::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 5px;
+        background: var(--gray4);
+        border-radius: 3px;
+      }
+
+      #recap-header {
+        padding: 20px 20px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 0.5px solid var(--sep-transparent);
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+      #recap-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--label-primary);
+        letter-spacing: -0.45px;
+      }
+      #recap-close {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: none;
+        background: var(--fill-tertiary);
+        font-size: 13px;
+        cursor: pointer;
+        color: var(--gray1);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.1s;
+      }
+      #recap-close:active {
+        background: var(--gray4);
+      }
+
+      /* Stats row */
+      #recap-summary-bar {
+        display: flex;
+        gap: 10px;
+        padding: 14px 16px 10px;
+        background: var(--bg-grouped);
+        flex-shrink: 0;
+      }
+      .recap-stat {
+        flex: 1;
+        padding: 12px 12px 10px;
+        background: var(--bg-secondary);
+        border-radius: var(--r-md);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        box-shadow: var(--shadow-sm);
+      }
+      .recap-stat-num {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--label-primary);
+        line-height: 1;
+        letter-spacing: -0.5px;
+      }
+      .recap-stat-label {
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--label-secondary);
+        letter-spacing: -0.08px;
+        line-height: 1.3;
+      }
+
+      /* Segmented filter control */
+      #recap-filter-bar {
+        display: flex;
+        gap: 7px;
+        padding: 6px 16px 12px;
+        flex-shrink: 0;
+        overflow-x: auto;
+      }
+      #recap-filter-bar::-webkit-scrollbar {
+        display: none;
+      }
+      .recap-filter-btn {
+        padding: 0 14px;
+        height: 30px;
+        border-radius: 980px;
+        border: none;
+        background: var(--fill-tertiary);
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--label-secondary);
+        cursor: pointer;
+        font-family: var(--font);
+        white-space: nowrap;
+        letter-spacing: -0.08px;
+        transition: all 0.15s ease;
+      }
+      .recap-filter-btn.active {
+        background: var(--label-primary);
+        color: var(--bg-secondary);
+      }
+
+      /* Recap list */
+      #recap-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 16px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .recap-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: var(--r-md);
+        background: var(--bg-secondary);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: opacity 0.12s ease;
+      }
+      .recap-row:active {
+        opacity: 0.6;
+      }
+      .recap-row-id {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--label-primary);
+        width: 44px;
+        flex-shrink: 0;
+        letter-spacing: -0.24px;
+      }
+      .recap-row-zone {
+        font-size: 13px;
+        color: var(--label-secondary);
+        font-weight: 400;
+        flex: 1;
+        letter-spacing: -0.08px;
+      }
+      .recap-chips {
+        display: flex;
+        gap: 5px;
+      }
+      .recap-chip {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 980px;
+        letter-spacing: -0.08px;
+      }
+      .chip-ok {
+        background: rgba(52, 199, 89, 0.14);
+        color: #1a7a36;
+      }
+      .chip-no {
+        background: rgba(255, 59, 48, 0.1);
+        color: #c0000b;
+      }
+      .chip-partial {
+        background: rgba(255, 149, 0, 0.12);
+        color: #9e4400;
+      }
+      .chip-empty {
+        background: var(--fill-tertiary);
+        color: var(--gray1);
+      }
+
+      /* ═══ iOS SHEET ANIMATIONS ═══ */
+      @keyframes ios-sheet-in {
+        from {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @keyframes ios-fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      #recap-panel.open #recap-box {
+        animation: ios-sheet-in 0.38s cubic-bezier(0.32, 0.72, 0, 1) both;
+      }
+      #recap-panel.open {
+        animation: ios-fade-in 0.2s ease both;
+      }
+      #slot-modal-overlay > div {
+        animation: ios-sheet-in 0.35s cubic-bezier(0.32, 0.72, 0, 1) both;
+      }
+
+      /* Ensure slot modal scrollbar hidden on mobile */
+      #slot-modal-overlay > div::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* ═══ MISC POLISH ═══ */
+      .shelf-unit {
+        border: 0.5px solid rgba(0, 0, 0, 0.06);
+      }
+      input:focus,
+      textarea:focus {
+        outline: none;
+      }
+      .hdr-btn,
+      .toolbar-btn,
+      .recap-filter-btn,
+      .modal-add-row-btn {
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      /* Consistent chevron on recap rows */
+      .recap-row::after {
+        content: "›";
+        font-size: 20px;
+        color: var(--gray3);
+        font-weight: 300;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map-pane">
+      <div id="map-header">
+        <div id="map-header-left">
+          <div id="store-name">INFORMASI RAK TOKO</div>
+          <button id="store-toggle" onclick="toggleStorePicker()">
+            <span class="store-label" id="store-label-text"
+              >Alfamidi A Yani Purwodadi</span
+            >
+            <span class="chevron">▼</span>
+          </button>
+        </div>
+        <!-- Store Picker Dropdown -->
+        <div id="store-picker"></div>
+        <div id="map-header-right">
+          <button
+            id="dot-menu-btn"
+            onclick="toggleDotMenu()"
+            style="
+              padding: 0;
+              width: 36px;
+              height: 32px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-direction: column;
+              gap: 3px;
+              background: none;
+              border: none;
+              cursor: pointer;
+            "
+          >
+            <span
+              style="
+                display: block;
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: var(--label-primary);
+              "
+            ></span>
+            <span
+              style="
+                display: block;
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: var(--label-primary);
+              "
+            ></span>
+            <span
+              style="
+                display: block;
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: var(--label-primary);
+              "
+            ></span>
+          </button>
+          <div id="dot-menu">
+            <div
+              class="dot-menu-item"
+              onclick="
+                openRecap();
+                closeDotMenu();
+              "
+            >
+              Laporan
+            </div>
+            <div class="dot-menu-sep"></div>
+            <div
+              class="dot-menu-item"
+              onclick="
+                exportData();
+                closeDotMenu();
+              "
+            >
+              Export
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="map-svg-wrap">
+        <svg id="fp" width="100%" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+
+    <div id="detail-pane">
+      <div id="empty-state">
+        <div class="empty-icon">🗺️</div>
+        <div class="empty-label">Pilih Rak di Denah</div>
+        <div class="empty-sub">
+          Ketuk salah satu rak untuk melihat &amp; mengisi produk
+        </div>
+      </div>
+      <div id="rack-panel">
+        <div id="modal-box">
+          <div id="modal-header">
+            <div id="modal-header-text" style="flex: 1; min-width: 0">
+              <div id="modal-title">—</div>
+              <span id="modal-zone">—</span>
+            </div>
+            <div style="position: relative; flex-shrink: 0">
+              <button
+                id="toolbar-dot-btn"
+                onclick="toggleToolbarMenu()"
+                style="
+                  background: none;
+                  border: none;
+                  cursor: pointer;
+                  width: 32px;
+                  height: 30px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-direction: column;
+                  gap: 3px;
+                  padding: 0;
+                "
+              >
+                <span
+                  style="
+                    display: block;
+                    width: 4px;
+                    height: 4px;
+                    border-radius: 50%;
+                    background: var(--label-primary);
+                  "
+                ></span>
+                <span
+                  style="
+                    display: block;
+                    width: 4px;
+                    height: 4px;
+                    border-radius: 50%;
+                    background: var(--label-primary);
+                  "
+                ></span>
+                <span
+                  style="
+                    display: block;
+                    width: 4px;
+                    height: 4px;
+                    border-radius: 50%;
+                    background: var(--label-primary);
+                  "
+                ></span>
+              </button>
+              <div
+                id="toolbar-dot-menu"
+                style="
+                  display: none;
+                  position: absolute;
+                  top: calc(100% + 4px);
+                  right: 0;
+                  background: rgba(255, 255, 255, 0.96);
+                  backdrop-filter: blur(40px) saturate(200%);
+                  -webkit-backdrop-filter: blur(40px) saturate(200%);
+                  border: 0.5px solid rgba(60, 60, 67, 0.18);
+                  border-radius: var(--r-lg);
+                  box-shadow:
+                    0 8px 40px rgba(0, 0, 0, 0.16),
+                    0 2px 8px rgba(0, 0, 0, 0.08);
+                  padding: 5px;
+                  min-width: 180px;
+                  z-index: 60;
+                  font-family: var(--font);
+                "
+              >
+                <div
+                  class="dot-menu-item"
+                  onclick="
+                    addSlotToAll();
+                    closeToolbarMenu();
+                  "
+                >
+                  Tambah Kolom
+                </div>
+                <div class="dot-menu-sep"></div>
+                <div
+                  class="dot-menu-item"
+                  onclick="
+                    removeSlotFromAll();
+                    closeToolbarMenu();
+                  "
+                >
+                  Hapus Kolom
+                </div>
+                <div class="dot-menu-sep"></div>
+                <div
+                  class="dot-menu-item"
+                  onclick="
+                    addShelfRow();
+                    closeToolbarMenu();
+                  "
+                >
+                  Tambah Baris
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="modal-shelf-wrap"></div>
+        </div>
+      </div>
+
+      <!-- ══ POPUPS — semua di dalam detail-pane ══ -->
+      <div
+        id="slot-modal-overlay"
+        style="
+          display: none;
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.45);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          z-index: 20;
+          align-items: flex-end;
+          justify-content: center;
+        "
+      >
+        <div
+          style="
+            background: var(--bg-grouped);
+            border-radius: 26px 26px 0 0;
+            width: 100%;
+            max-height: 100%;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            font-family: var(--font);
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+          "
+        >
+          <!-- Drag handle -->
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              padding-top: 10px;
+              padding-bottom: 4px;
+            "
+          >
+            <div
+              style="
+                width: 36px;
+                height: 5px;
+                background: var(--gray4);
+                border-radius: 3px;
+              "
+            ></div>
+          </div>
+
+          <!-- Sheet header -->
+          <div
+            style="
+              padding: 12px 16px 12px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+            "
+          >
+            <div
+              id="slot-modal-title"
+              style="
+                font-size: 17px;
+                font-weight: 700;
+                color: var(--label-primary);
+                letter-spacing: -0.41px;
+              "
+            >
+              Edit Slot
+            </div>
+            <button
+              onclick="closeSlotModal()"
+              style="
+                background: var(--fill-tertiary);
+                border: none;
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                font-size: 12px;
+                cursor: pointer;
+                color: var(--gray1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-family: var(--font);
+              "
+            >
+              ✕
+            </button>
+          </div>
+
+          <!-- Form body -->
+          <div
+            style="
+              padding: 0 16px 16px;
+              display: flex;
+              flex-direction: column;
+              gap: 20px;
+            "
+          >
+            <!-- Honeypot: cegah browser autofill -->
+            <input type="text" name="username" style="display:none" aria-hidden="true" tabindex="-1" />
+            <input type="password" name="password" style="display:none" aria-hidden="true" tabindex="-1" />
+            <!-- SECTION: Foto -->
+            <div>
+              <div
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  color: var(--label-secondary);
+                  text-transform: uppercase;
+                  letter-spacing: 0.04em;
+                  margin-bottom: 8px;
+                  padding-left: 4px;
+                "
+              >
+                Foto Produk
+              </div>
+              <div
+                id="slot-img-preview"
+                onclick="document.getElementById('slot-img-input').click()"
+                style="
+                  width: 100%;
+                  height: 120px;
+                  background: var(--bg-secondary);
+                  border: 1.5px dashed var(--gray4);
+                  border-radius: var(--r-md);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  overflow: hidden;
+                  cursor: pointer;
+                  position: relative;
+                "
+              >
+                <span
+                  id="slot-img-placeholder"
+                  style="
+                    font-size: 13px;
+                    color: var(--gray2);
+                    pointer-events: none;
+                  "
+                  >Ketuk untuk upload foto</span
+                >
+                <img
+                  id="slot-img-thumb"
+                  src=""
+                  style="
+                    display: none;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    pointer-events: none;
+                  "
+                />
+                <button
+                  id="slot-img-remove"
+                  onclick="removeSlotImage(event)"
+                  style="
+                    display: none;
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    background: rgba(0, 0, 0, 0.5);
+                    border: none;
+                    color: #fff;
+                    border-radius: 50%;
+                    width: 24px;
+                    height: 24px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    line-height: 1;
+                    z-index: 2;
+                    pointer-events: all;
+                    display: none;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                  "
+                >
+                  ✕
+                </button>
+              </div>
+              <input
+                type="file"
+                id="slot-img-input"
+                accept="image/*"
+                style="display: none"
+                onchange="handleSlotImageUpload(event)"
+              />
+            </div>
+
+            <!-- SECTION: Detail Produk (grouped card) -->
+            <div>
+              <div
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  color: var(--label-secondary);
+                  text-transform: uppercase;
+                  letter-spacing: 0.04em;
+                  margin-bottom: 8px;
+                  padding-left: 4px;
+                "
+              >
+                Detail Produk
+              </div>
+              <div
+                style="
+                  background: var(--bg-secondary);
+                  border-radius: var(--r-md);
+                  overflow: hidden;
+                  box-shadow: var(--shadow-sm);
+                "
+              >
+                <!-- Nama -->
+                <div
+                  style="
+                    padding: 12px 16px;
+                    border-bottom: 0.5px solid var(--sep-transparent);
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 12px;
+                      font-weight: 500;
+                      color: var(--label-secondary);
+                      margin-bottom: 5px;
+                      letter-spacing: -0.08px;
+                    "
+                  >
+                    Nama Produk
+                  </div>
+                  <input
+                    id="slot-name-input"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="Contoh: Indomie Goreng"
+                    style="
+                      width: 100%;
+                      border: none;
+                      outline: none;
+                      font-size: 15px;
+                      color: var(--label-primary);
+                      background: transparent;
+                      font-family: var(--font);
+                      letter-spacing: -0.24px;
+                      padding: 0;
+                    "
+                    onfocus="
+                      const l = this.value.length;
+                      this.setSelectionRange(l, l);
+                    "
+                  />
+                </div>
+
+                <!-- PLU + Barcode row -->
+                <div
+                  style="
+                    display: flex;
+                    border-bottom: 0.5px solid var(--sep-transparent);
+                  "
+                >
+                  <div
+                    style="
+                      flex: 1;
+                      padding: 12px 16px;
+                      border-right: 0.5px solid var(--sep-transparent);
+                    "
+                  >
+                    <div
+                      style="
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: var(--label-secondary);
+                        margin-bottom: 5px;
+                        letter-spacing: -0.08px;
+                      "
+                    >
+                      PLU
+                    </div>
+                    <input
+                      id="slot-plu-input"
+                      type="text"
+                      autocomplete="off"
+                      placeholder="10023"
+                      style="
+                        width: 100%;
+                        border: none;
+                        outline: none;
+                        font-size: 15px;
+                        color: var(--label-primary);
+                        background: transparent;
+                        font-family:
+                          &quot;SF Mono&quot;, ui-monospace, monospace;
+                        letter-spacing: 0;
+                        padding: 0;
+                      "
+                      onfocus="
+                        const l = this.value.length;
+                        this.setSelectionRange(l, l);
+                      "
+                    />
+                  </div>
+                  <div style="flex: 2; padding: 12px 16px">
+                    <div
+                      style="
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: var(--label-secondary);
+                        margin-bottom: 5px;
+                        letter-spacing: -0.08px;
+                      "
+                    >
+                      Barcode
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center">
+                      <input
+                        id="slot-barcode-input"
+                        type="text"
+                        autocomplete="off"
+                        placeholder="8991234567890"
+                        style="
+                          flex: 1;
+                          border: none;
+                          outline: none;
+                          font-size: 15px;
+                          color: var(--label-primary);
+                          background: transparent;
+                          font-family:
+                            &quot;SF Mono&quot;, ui-monospace, monospace;
+                          padding: 0;
+                          letter-spacing: 0;
+                        "
+                        onfocus="
+                          const l = this.value.length;
+                          this.setSelectionRange(l, l);
+                        "
+                        oninput="previewBarcodeInline()"
+                      />
+                      <button
+                        onclick="showBarcodePreview()"
+                        style="
+                          padding: 4px 10px;
+                          border-radius: 980px;
+                          border: none;
+                          background: var(--fill-tertiary);
+                          font-size: 12px;
+                          font-weight: 600;
+                          color: var(--sys-blue);
+                          cursor: pointer;
+                          font-family: var(--font);
+                          white-space: nowrap;
+                        "
+                      >
+                        Lihat
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Terakhir Update -->
+                <div
+                  style="
+                    padding: 12px 16px;
+                    border-bottom: 0.5px solid var(--sep-transparent);
+                  "
+                >
+                  <div
+                    style="
+                      font-size: 12px;
+                      font-weight: 500;
+                      color: var(--label-secondary);
+                      margin-bottom: 5px;
+                      letter-spacing: -0.08px;
+                    "
+                  >
+                    Terakhir Update
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <input
+                      id="slot-desc-input"
+                      type="date"
+                      oninput="hitungBatasRetur()"
+                      style="
+                        flex: 1;
+                        border: none;
+                        outline: none;
+                        font-size: 15px;
+                        color: var(--label-primary);
+                        background: transparent;
+                        font-family: var(--font);
+                        letter-spacing: -0.24px;
+                        padding: 0;
+                        cursor: pointer;
+                      "
+                    />
+                    <button
+                      onclick="
+                        document.getElementById('slot-desc-input').value =
+                          new Date().toISOString().slice(0, 10);
+                        hitungBatasRetur();
+                      "
+                      style="
+                        padding: 4px 12px;
+                        border-radius: 980px;
+                        border: none;
+                        background: var(--fill-tertiary);
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: var(--sys-blue);
+                        cursor: pointer;
+                        font-family: var(--font);
+                        white-space: nowrap;
+                        flex-shrink: 0;
+                      "
+                    >
+                      Hari Ini
+                    </button>
+                  </div>
+                </div>
+
+                <!-- RH + Batas Retur -->
+                <div style="display: flex; border-bottom: 0">
+                  <div
+                    style="
+                      flex: 1;
+                      padding: 12px 16px;
+                      border-right: 0.5px solid var(--sep-transparent);
+                    "
+                  >
+                    <div
+                      style="
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: var(--label-secondary);
+                        margin-bottom: 5px;
+                        letter-spacing: -0.08px;
+                      "
+                    >
+                      RH (Hari)
+                    </div>
+                    <input
+                      id="slot-rh-input"
+                      type="number"
+                      autocomplete="off"
+                      min="1"
+                      placeholder="Contoh: 30"
+                      oninput="hitungBatasRetur()"
+                      style="
+                        width: 100%;
+                        border: none;
+                        outline: none;
+                        font-size: 15px;
+                        color: var(--label-primary);
+                        background: transparent;
+                        font-family: var(--font);
+                        letter-spacing: -0.24px;
+                        padding: 0;
+                      "
+                    />
+                  </div>
+                  <div style="flex: 2; padding: 12px 16px">
+                    <div
+                      style="
+                        font-size: 12px;
+                        font-weight: 500;
+                        color: var(--label-secondary);
+                        margin-bottom: 5px;
+                        letter-spacing: -0.08px;
+                      "
+                    >
+                      Batas Retur
+                    </div>
+                    <div
+                      id="slot-retur-display"
+                      style="
+                        font-size: 15px;
+                        font-weight: 600;
+                        color: var(--label-primary);
+                        letter-spacing: -0.24px;
+                        min-height: 22px;
+                      "
+                    >
+                      —
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION: Status Shelving -->
+            <div>
+              <div
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  color: var(--label-secondary);
+                  text-transform: uppercase;
+                  letter-spacing: 0.04em;
+                  margin-bottom: 8px;
+                  padding-left: 4px;
+                "
+              >
+                Status Shelving
+              </div>
+              <div style="display: flex; gap: 10px">
+                <!-- Rapi -->
+                <div
+                  onclick="toggleShelfCheck('rapi')"
+                  style="
+                    flex: 1;
+                    background: var(--bg-secondary);
+                    border-radius: var(--r-md);
+                    box-shadow: var(--shadow-sm);
+                    padding: 14px 16px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 10px;
+                    cursor: pointer;
+                    user-select: none;
+                    transition: background 0.12s;
+                    border: 1.5px solid transparent;
+                  "
+                  id="slot-card-rapi"
+                >
+                  <div
+                    id="slot-check-rapi"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      border: 2px solid var(--gray4);
+                      background: transparent;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 20px;
+                      color: transparent;
+                      transition: all 0.2s;
+                    "
+                  >
+                    ✓
+                  </div>
+                  <div style="text-align: center">
+                    <div
+                      style="
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: var(--label-primary);
+                        letter-spacing: -0.24px;
+                      "
+                    >
+                      Rapi
+                    </div>
+                    <div
+                      style="
+                        font-size: 11px;
+                        color: var(--label-secondary);
+                        margin-top: 2px;
+                      "
+                    >
+                      Produk sudah rapi
+                    </div>
+                  </div>
+                </div>
+                <!-- Harga -->
+                <div
+                  onclick="toggleShelfCheck('harga')"
+                  style="
+                    flex: 1;
+                    background: var(--bg-secondary);
+                    border-radius: var(--r-md);
+                    box-shadow: var(--shadow-sm);
+                    padding: 14px 16px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 10px;
+                    cursor: pointer;
+                    user-select: none;
+                    transition: background 0.12s;
+                    border: 1.5px solid transparent;
+                  "
+                  id="slot-card-harga"
+                >
+                  <div
+                    id="slot-check-harga"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      border: 2px solid var(--gray4);
+                      background: transparent;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 20px;
+                      color: transparent;
+                      transition: all 0.2s;
+                    "
+                  >
+                    ✓
+                  </div>
+                  <div style="text-align: center">
+                    <div
+                      style="
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: var(--label-primary);
+                        letter-spacing: -0.24px;
+                      "
+                    >
+                      Harga
+                    </div>
+                    <div
+                      style="
+                        font-size: 11px;
+                        color: var(--label-secondary);
+                        margin-top: 2px;
+                      "
+                    >
+                      Label harga terpasang
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Barcode preview -->
+            <div
+              id="slot-barcode-preview-wrap"
+              style="
+                display: none;
+                background: var(--bg-secondary);
+                border-radius: var(--r-md);
+                padding: 12px;
+                text-align: center;
+                box-shadow: var(--shadow-sm);
+              "
+            >
+              <canvas
+                id="slot-barcode-preview-canvas"
+                style="max-width: 100%"
+              ></canvas>
+              <div
+                id="slot-barcode-preview-err"
+                style="font-size: 11px; color: var(--sys-red); display: none"
+              >
+                Barcode tidak valid
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display: flex; gap: 10px">
+              <button
+                onclick="clearSlot()"
+                style="
+                  flex: 1;
+                  padding: 0;
+                  height: 44px;
+                  border-radius: var(--r-md);
+                  border: none;
+                  background: rgba(255, 59, 48, 0.1);
+                  color: var(--sys-red);
+                  font-size: 15px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  font-family: var(--font);
+                  letter-spacing: -0.24px;
+                "
+              >
+                Hapus
+              </button>
+              <button
+                onclick="closeSlotModal()"
+                style="
+                  flex: 1;
+                  padding: 0;
+                  height: 44px;
+                  border-radius: var(--r-md);
+                  border: none;
+                  background: var(--fill-tertiary);
+                  color: var(--label-primary);
+                  font-size: 15px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  font-family: var(--font);
+                  letter-spacing: -0.24px;
+                "
+              >
+                Batal
+              </button>
+              <button
+                onclick="saveSlot()"
+                style="
+                  flex: 2;
+                  padding: 0;
+                  height: 44px;
+                  border-radius: var(--r-md);
+                  border: none;
+                  background: var(--sys-blue);
+                  color: #fff;
+                  font-size: 15px;
+                  font-weight: 600;
+                  cursor: pointer;
+                  font-family: var(--font);
+                  letter-spacing: -0.24px;
+                "
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+          <!-- /form body -->
+        </div>
+      </div>
+
+      <div
+        id="barcode-full-modal"
+        style="
+          display: none;
+          position: absolute;
+          inset: 0;
+          background: rgba(28, 28, 30, 0.97);
+          backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
+          z-index: 30;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          padding: 60px 16px 32px;
+          box-sizing: border-box;
+          font-family: var(--font);
+        "
+      >
+        <button
+          onclick="closeBarcodeModal()"
+          style="
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+          "
+        >
+          ✕
+        </button>
+        <!-- Product header: image above, then name -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:4px;">
+          <img
+            id="barcode-full-img"
+            src=""
+            style="
+              display:none;
+              width:260px;
+              height:260px;
+              border-radius:16px;
+              object-fit:cover;
+              border:2px solid rgba(255,255,255,0.18);
+              box-shadow:0 8px 24px rgba(0,0,0,0.4);
+            "
+          />
+          <div
+            id="barcode-full-prodname"
+            style="
+              font-size: 19px;
+              font-weight: 700;
+              color: #ffffff;
+              text-align: center;
+              letter-spacing: -0.45px;
+              padding: 0 48px;
+            "
+          ></div>
+        </div>
+        <div
+          id="barcode-full-plu"
+          style="
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 24px;
+            font-family: &quot;SF Mono&quot;, ui-monospace, monospace;
+            letter-spacing: 0.02em;
+          "
+        ></div>
+        <div
+          style="
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 20px 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            width: min(372px, 90vw);
+            box-sizing: border-box;
+          "
+        >
+          <canvas
+            id="barcode-full-canvas"
+            style="display: block; width: 100%; max-width: 300px; margin: 0 auto;"
+          ></canvas>
+        </div>
+        <!-- Rack location info -->
+        <div
+          id="barcode-full-location"
+          style="
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.75);
+            margin-top: 16px;
+            letter-spacing: -0.08px;
+            text-align: center;
+          "
+        ></div>
+        <!-- RH info -->
+        <div
+          id="barcode-full-rh"
+          style="
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+            letter-spacing: -0.08px;
+            text-align: center;
+          "
+        ></div>
+        <!-- Shelf check badges -->
+        <div
+          id="barcode-full-checks"
+          style="
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+          "
+        ></div>
+      </div>
+
+      <!-- Recap Panel -->
+      <div id="recap-panel">
+        <div id="recap-box">
+          <div id="recap-header">
+            <div id="recap-title">📋 Rekap Status Rak</div>
+            <button id="recap-close" onclick="closeRecap()">✕</button>
+          </div>
+          <div id="recap-summary-bar">
+            <div class="recap-stat">
+              <div class="recap-stat-num" id="rs-total">0</div>
+              <div class="recap-stat-label">Total Rak Dibuka</div>
+            </div>
+            <div class="recap-stat">
+              <div class="recap-stat-num" id="rs-filled">0</div>
+              <div class="recap-stat-label">Rak Terisi</div>
+            </div>
+            <div class="recap-stat">
+              <div class="recap-stat-num" id="rs-rapi">0</div>
+              <div class="recap-stat-label">Semua Rapi</div>
+            </div>
+            <div class="recap-stat">
+              <div class="recap-stat-num" id="rs-harga">0</div>
+              <div class="recap-stat-label">Harga Lengkap</div>
+            </div>
+          </div>
+          <div id="recap-filter-bar">
+            <button
+              class="recap-filter-btn active"
+              onclick="setRecapFilter('all', this)"
+            >
+              Semua
+            </button>
+            <button
+              class="recap-filter-btn"
+              onclick="setRecapFilter('belum-rapi', this)"
+            >
+              ⚠ Belum Rapi
+            </button>
+            <button
+              class="recap-filter-btn"
+              onclick="setRecapFilter('belum-harga', this)"
+            >
+              ⚠ Belum Ada Harga
+            </button>
+            <button
+              class="recap-filter-btn"
+              onclick="setRecapFilter('kosong', this)"
+            >
+              Kosong
+            </button>
+          </div>
+          <div id="recap-list"></div>
+        </div>
+      </div>
+    </div>
+    <!-- /#detail-pane -->
+
+    <!-- Context Menu — di dalam detail-pane lewat JS append -->
+    <div id="ctx-menu">
+      <div class="ctx-item" id="ctx-edit">✏️&nbsp; Edit Produk</div>
+      <div class="ctx-sep"></div>
+      <div class="ctx-label">Ukuran Slot</div>
+      <div class="ctx-shapes">
+        <button
+          class="ctx-shape-btn"
+          data-shape="sn"
+          onclick="ctxSetShape('sn')"
+        >
+          <div class="sp" style="width: 18px; height: 40px"></div>
+          <span class="sl">Sempit</span>
+        </button>
+        <button
+          class="ctx-shape-btn"
+          data-shape="md"
+          onclick="ctxSetShape('md')"
+        >
+          <div class="sp" style="width: 26px; height: 40px"></div>
+          <span class="sl">Normal</span>
+        </button>
+        <button
+          class="ctx-shape-btn"
+          data-shape="wd"
+          onclick="ctxSetShape('wd')"
+        >
+          <div class="sp" style="width: 38px; height: 40px"></div>
+          <span class="sl">Lebar</span>
+        </button>
+        <button
+          class="ctx-shape-btn"
+          data-shape="xl"
+          onclick="ctxSetShape('xl')"
+        >
+          <div class="sp" style="width: 50px; height: 40px"></div>
+          <span class="sl">XL</span>
+        </button>
+        <button
+          class="ctx-shape-btn"
+          data-shape="tl"
+          onclick="ctxSetShape('tl')"
+        >
+          <div class="sp" style="width: 26px; height: 56px"></div>
+          <span class="sl">Tinggi</span>
+        </button>
+        <button
+          class="ctx-shape-btn"
+          data-shape="wt"
+          onclick="ctxSetShape('wt')"
+        >
+          <div class="sp" style="width: 38px; height: 56px"></div>
+          <span class="sl">L+Tinggi</span>
+        </button>
+      </div>
+      <div class="ctx-sep"></div>
+      <div class="ctx-item danger" id="ctx-del">🗑️&nbsp; Hapus Produk</div>
+    </div>
+
+    <script>
+      // BARCODE RENDERER — pure canvas, CODE128
+      const BC = (() => {
+        const C128 = [
+          "11011001100",
+          "11001101100",
+          "11001100110",
+          "10010011000",
+          "10010001100",
+          "10001001100",
+          "10011001000",
+          "10011000100",
+          "10001100100",
+          "11001001000",
+          "11001000100",
+          "11000100100",
+          "10110011100",
+          "10011011100",
+          "10011001110",
+          "10111001100",
+          "10011101100",
+          "10011100110",
+          "11001110010",
+          "11001011100",
+          "11001001110",
+          "11011100100",
+          "11001110100",
+          "11101101110",
+          "11101001100",
+          "11100101100",
+          "11100100110",
+          "11101100100",
+          "11100110100",
+          "11100110010",
+          "11011011000",
+          "11011000110",
+          "11000110110",
+          "10100011000",
+          "10001011000",
+          "10001000110",
+          "10110001000",
+          "10001101000",
+          "10001100010",
+          "11010001000",
+          "11000101000",
+          "11000100010",
+          "10110111000",
+          "10110001110",
+          "10001101110",
+          "10111011000",
+          "10111000110",
+          "10001110110",
+          "11101110110",
+          "11010001110",
+          "11000101110",
+          "11011101000",
+          "11011100010",
+          "11011101110",
+          "11101011000",
+          "11101000110",
+          "11100010110",
+          "11101101000",
+          "11101100010",
+          "11100011010",
+          "11101111010",
+          "11001000010",
+          "11110001010",
+          "10100110000",
+          "10100001100",
+          "10010110000",
+          "10010000110",
+          "10000101100",
+          "10000100110",
+          "10110010000",
+          "10110000100",
+          "10011010000",
+          "10011000010",
+          "10000110100",
+          "10000110010",
+          "11000010010",
+          "11001010000",
+          "11110111010",
+          "11000010100",
+          "10001111010",
+          "10100111100",
+          "10010111100",
+          "10010011110",
+          "10111100100",
+          "10011110100",
+          "10011110010",
+          "11110100100",
+          "11110010100",
+          "11110010010",
+          "11011011110",
+          "11011110110",
+          "11110110110",
+          "10101111000",
+          "10100011110",
+          "10001011110",
+          "10111101000",
+          "10111100010",
+          "11110101000",
+          "11110100010",
+          "10111011110",
+          "10111101110",
+          "11101011110",
+          "11110101110",
+          "11010000100",
+          "11010010000",
+          "11010011100",
+          "1100011101011",
+        ];
+        function encode(text) {
+          const SB = 104,
+            ST = 106;
+          let codes = [SB],
+            ck = SB;
+          for (let i = 0; i < text.length; i++) {
+            const c = text.charCodeAt(i) - 32;
+            if (c < 0 || c > 95) return null;
+            codes.push(c);
+            ck += (i + 1) * c;
+          }
+          codes.push(ck % 103, ST);
+          return codes.map((c) => C128[c]).join("");
+        }
+        return function (canvas, value, o = {}) {
+          try {
+            const bars = encode(String(value));
+            if (!bars) return false;
+            const bw = o.barW || 2,
+              h = o.height || 60,
+              mg = o.margin !== undefined ? o.margin : 8;
+            const showTxt = o.displayValue !== false,
+              fs = o.fontSize || 13;
+            const W = bars.length * bw + mg * 2,
+              H = h + mg * 2 + (showTxt ? fs + 6 : 0);
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, W, H);
+            ctx.fillStyle = "#111";
+            for (let i = 0; i < bars.length; i++)
+              if (bars[i] === "1") ctx.fillRect(mg + i * bw, mg, bw, h);
+            if (showTxt) {
+              ctx.fillStyle = "#111";
+              ctx.font = `${fs}px monospace`;
+              ctx.textAlign = "center";
+              ctx.fillText(value, W / 2, mg + h + fs + 2);
+            }
+            return true;
+          } catch (e) {
+            return false;
+          }
+        };
+      })();
+
+      // DENAH SVG
+      const Z = {
+        nf: { f: "#B5D4F4", s: "#185FA5", t: "#0C447C", n: "Non-Makanan" },
+        fd: { f: "#C0DD97", s: "#3B6D11", t: "#27500A", n: "Makanan" },
+        sn: { f: "#F5C4B3", s: "#993C1D", t: "#712B13", n: "Snack / Samboys" },
+        ch: { f: "#9FE1CB", s: "#0F6E56", t: "#085041", n: "Chiller / Fresh" },
+        gn: {
+          f: "#FAC775",
+          s: "#854F0B",
+          t: "#633806",
+          n: "Gondola / Display",
+        },
+        wl: { f: "#D3D1C7", s: "#888780", t: "#444441", n: "Dinding / Wall" },
+        cs: { f: "#CECBF6", s: "#534AB7", t: "#3C3489", n: "Kasir / ATM" },
+        em: { f: "#EBEBEB", s: "#CCCCCC", t: "#aaa", n: "" },
+      };
+      const fpSvg = document.getElementById("fp"),
+        ns = "http://www.w3.org/2000/svg";
+      function mkEl(tag, attrs, text) {
+        const e = document.createElementNS(ns, tag);
+        Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+        if (text !== undefined) e.textContent = text;
+        return e;
+      }
+      function rk(par, x, y, w, h, label, z, rx = 2) {
+        const g = document.createElementNS(ns, "g");
+        g.setAttribute("class", "rk");
+        g.appendChild(
+          mkEl("rect", {
+            x,
+            y,
+            width: w,
+            height: h,
+            rx,
+            fill: z.f,
+            stroke: z.s,
+            "stroke-width": "0.5",
+          }),
+        );
+        if (label) {
+          const lines = label.split("\n"),
+            lh = 10,
+            tot = lines.length * lh;
+          lines.forEach((ln, i) => {
+            const fs = Math.max(
+              6,
+              Math.min(8.5, w / (Math.max(ln.length, 1) * 0.62)),
+            );
+            g.appendChild(
+              mkEl(
+                "text",
+                {
+                  x: x + w / 2,
+                  y: y + h / 2 - tot / 2 + i * lh + lh * 0.8,
+                  "text-anchor": "middle",
+                  "font-size": fs,
+                  fill: z.t,
+                  "font-weight": "600",
+                  "font-family": "system-ui,sans-serif",
+                },
+                ln,
+              ),
+            );
+          });
+        }
+        if (label && z !== Z.em) {
+          g.style.cursor = "pointer";
+          g.addEventListener("click", () => openModal(label, z.n, z.s, z.f));
+        }
+        par.appendChild(g);
+      }
+      const CW = 46,
+        CH = 46,
+        RW = 46,
+        X0 = 12 + RW,
+        RX = 12 + 644 - RW;
+      fpSvg.setAttribute("viewBox", "0 0 668 668");
+      rk(fpSvg, 12, 12, 644, 644, "", { f: "#FFFFFF", s: "#E2E8F0", t: "" }, 8);
+      fpSvg.appendChild(
+        mkEl("rect", {
+          x: X0,
+          y: 12 + CH,
+          width: RX - X0,
+          height: 644 - CH,
+          fill: "#F9F9F9",
+        }),
+      );
+      [
+        "IA5",
+        "HA1",
+        "HA2",
+        "HA3",
+        "HA4",
+        "HA5",
+        "HA6",
+        "HA7",
+        "HA8",
+        "HB1",
+        "VJT",
+        "VKT",
+      ].forEach((id, i) =>
+        rk(fpSvg, X0 + i * CW, 12, CW, CH, id, id ? Z.wl : Z.em, 2),
+      );
+      rk(fpSvg, RX - RW, 12, RW, CH, "VLT", Z.wl, 2);
+      rk(fpSvg, RX, 12, RW, CH, "ZHH", Z.wl, 2);
+      let ly = 12 + CH;
+      [
+        "IA4",
+        "IA3",
+        "IA2",
+        "IA1",
+        "JA1",
+        "SA3",
+        "SA2",
+        "SA1",
+        "AA5",
+        "AA4",
+        "AA3",
+        "AA2",
+        "AA1",
+      ].forEach((id) => {
+        rk(fpSvg, 12, ly, RW, CH, id, Z.wl, 2);
+        ly += CH;
+      });
+      let ry = 12 + CH;
+      [
+        "VJ1",
+        "VI1",
+        "VF2",
+        "VF1",
+        "VD1",
+        "VB4",
+        "VB3",
+        "VB2",
+        "VB1",
+        "YB1",
+        "YB2",
+        "YG1",
+        "YG2",
+      ].forEach((id) => {
+        rk(fpSvg, RX, ry, RW, CH, id, Z.wl, 2);
+        ry += CH;
+      });
+      const fd = (id) => ({ id, z: Z.fd }),
+        nf = (id) => ({ id, z: Z.nf }),
+        sn = (id) => ({ id, z: Z.sn }),
+        gn = (id) => ({ id, z: Z.gn }),
+        ch = (id) => ({ id, z: Z.ch });
+      function fillRow(y, items) {
+        for (let i = 0; i < 12; i++) {
+          const it = items[i];
+          rk(fpSvg, X0 + i * CW, y, CW, CH, it ? it.id : "", it ? it.z : Z.em);
+        }
+      }
+      const yNF1 = 12 + CH,
+        yNF2 = yNF1 + CH,
+        yFD1 = yNF2 + CH,
+        yFD2 = yFD1 + CH,
+        yGN = yFD2 + CH,
+        yFD3 = yGN + CH,
+        yFD4 = yFD3 + CH,
+        ySN = yFD4 + CH,
+        ySOS = ySN + CH,
+        yCHR = ySOS + CH,
+        yBOT = yCHR + CH * 2;
+      fillRow(
+        yNF1,
+        [
+          "LA1",
+          "IB1",
+          "OB1",
+          "NA3",
+          "NA2",
+          "NA1",
+          "LA2",
+          "LA3",
+          "LE1",
+          "LF2",
+        ].map(nf),
+      );
+      fillRow(
+        yNF2,
+        [
+          "LF1",
+          "LB2",
+          "LB1",
+          "LD1",
+          "LD2",
+          "LC1",
+          "LC2",
+          "LC3",
+          "OA1",
+          "OA2",
+        ].map(nf),
+      );
+      fillRow(yFD1, ["JD3", "JD2", "JD1", "KA2", "KA1", "UAI", "MA1"].map(fd));
+      fillRow(yFD2, ["JC1", "JC2", "JB1", "JB2", "JB3", "UA2", "PA1"].map(fd));
+      fillRow(yGN, ["ZI4", "ZI1", "ZI3", "ZI2", "ZL1", "ZK1", "ZK2"].map(gn));
+      fillRow(
+        yFD3,
+        ["EA1", "IC2", "IC1", "RA1", "OD2", "OD1", "TA2", "TA1", "ID1"]
+          .map(fd)
+          .concat([gn("ZM1")]),
+      );
+      fillRow(yFD4, ["EA2", "EA3", "EA4", "EA5", "GA3", "GA2", "GA1"].map(fd));
+      fillRow(ySN, [
+        sn("BA3"),
+        sn("BA2"),
+        sn("BA1"),
+        sn("FB1"),
+        fd("FA3"),
+        fd("FA2"),
+        fd("FA1"),
+        fd("FC1"),
+      ]);
+      fillRow(ySOS, ["DA1", "DA2", "DA3", "CB1", "CA1", "CA2", "CA3"].map(fd));
+      fillRow(
+        yCHR,
+        ["AKA", "AK0", "AK9", "AK8", "AK7", "AK6", "AK5", "AK4"].map(ch),
+      );
+      fillRow(
+        yCHR + CH,
+        ["AK3", "AK2", "AK1", "YA4", "YA3", "YA2", "YA1"]
+          .map(ch)
+          .concat([gn("YN1")]),
+      );
+      fillRow(yBOT, ["YH1", "YI1", "YJ1", "YL1", "YL2", "YL3", "YL4"].map(gn));
+      fillRow(yBOT + CH, ["YL5", "YL6", "YM1", "YN2", "YO1", "YO2"].map(gn));
+      fpSvg.appendChild(
+        mkEl(
+          "text",
+          {
+            x: 30,
+            y: 12 + CH * 0.6,
+            "font-size": "13",
+            fill: "#555",
+            "font-weight": "500",
+            "font-family": "system-ui,sans-serif",
+            "text-anchor": "middle",
+          },
+          "↑",
+        ),
+      );
+      fpSvg.appendChild(
+        mkEl(
+          "text",
+          {
+            x: 30,
+            y: 12 + CH * 0.85,
+            "font-size": "7",
+            fill: "#555",
+            "font-family": "system-ui,sans-serif",
+            "text-anchor": "middle",
+          },
+          "N",
+        ),
+      );
+
+      // RACK DATA & MODAL
+      const RACK_DATA = {};
+      const PASTEL = [
+        "#FFB3B3",
+        "#FFD4A3",
+        "#FFF3A3",
+        "#B3F0B3",
+        "#A3D4FF",
+        "#D4A3FF",
+        "#FFB3E6",
+        "#A3FFE8",
+        "#FFD4D4",
+        "#B3D4FF",
+      ];
+      const ZICONS = {
+        "Non-Makanan": "🧴",
+        Makanan: "🥫",
+        "Snack / Samboys": "🍟",
+        "Chiller / Fresh": "🧊",
+        "Gondola / Display": "🛒",
+        "Dinding / Wall": "🧱",
+        "Kasir / ATM": "💳",
+        "": "📦",
+      };
+      let currentRak = null;
+
+      function openModal(id, zoneName, zoneColor, zoneBg) {
+        currentRak = id;
+        const _icon = document.getElementById("modal-icon");
+        if (_icon) _icon.style.display = "none";
+        document.getElementById("modal-title").textContent =
+          "PLANOGRAM RAK " + id;
+        document.getElementById("modal-zone").textContent = zoneName;
+        document.getElementById("modal-zone").style.background = zoneBg + "33";
+        document.getElementById("modal-zone").style.color = zoneColor;
+        if (!RACK_DATA[id])
+          RACK_DATA[id] = {
+            shelves: [
+              [null, null, null, null, null],
+              [null, null, null, null, null],
+              [null, null, null, null, null],
+            ],
+          };
+        renderShelves(id);
+        document.getElementById("empty-state").style.display = "none";
+        document.getElementById("rack-panel").classList.add("open");
+      }
+      function closeModal() {
+        document.getElementById("rack-panel").classList.remove("open");
+        document.getElementById("empty-state").style.display = "flex";
+        currentRak = null;
+      }
+
+      function _updateSlotCountDOM() {
+        // modal-slot-count dihapus
+      }
+
+      function renderShelves(id) {
+        const wrap = document.getElementById("modal-shelf-wrap");
+        wrap.innerHTML = "";
+        if (!RACK_DATA[id].shelfChecks) RACK_DATA[id].shelfChecks = {};
+
+        const shelves = RACK_DATA[id].shelves;
+        const maxCols = Math.max(...shelves.map((r) => r.length));
+
+        // Outer table wrapper
+        const tableWrap = document.createElement("div");
+        tableWrap.style.cssText =
+          "overflow-x:auto;border-radius:12px;border:1px solid var(--sep-opaque);background:#fff;";
+
+        const table = document.createElement("table");
+        table.style.cssText =
+          "width:100%;border-collapse:collapse;font-family:var(--font);";
+
+        // tbody
+        const tbody = document.createElement("tbody");
+        shelves.forEach((row, ri) => {
+          if (!RACK_DATA[id].shelfChecks[ri])
+            RACK_DATA[id].shelfChecks[ri] = { rapi: false, harga: false };
+          const sc = RACK_DATA[id].shelfChecks[ri];
+
+          const tr = document.createElement("tr");
+          const isLast = ri === shelves.length - 1;
+          const rowBorder = isLast
+            ? ""
+            : "border-bottom:1px solid var(--sep-transparent);";
+
+          // Slot cells
+          for (let pi = 0; pi < maxCols; pi++) {
+            const prod = row[pi] !== undefined ? row[pi] : null;
+            const td = document.createElement("td");
+            td.style.cssText = `padding:6px;vertical-align:top;border-right:0.5px solid var(--sep-transparent);${rowBorder}`;
+
+            const slot = document.createElement("div");
+            slot.className =
+              "product-slot" + (prod && prod.name ? " filled" : "");
+            const shapeKey = prod && prod.shape ? prod.shape : "md";
+            applyShapeToSlot(slot, shapeKey);
+
+            if (prod && prod.name) {
+              if (prod.image) {
+                const img = document.createElement("img");
+                img.className = "prod-img";
+                img.alt = prod.name;
+                img.src = prod.image;
+                img.onerror = () => {
+                  img.style.display = "none";
+                  const c = document.createElement("div");
+                  c.className = "prod-color";
+                  c.style.background = prod.color || "#eee";
+                  slot.insertBefore(c, img);
+                };
+                slot.appendChild(img);
+              } else {
+                const c = document.createElement("div");
+                c.className = "prod-color";
+                c.style.background = prod.color;
+                slot.appendChild(c);
+              }
+              const nm = document.createElement("div");
+              nm.className = "prod-name";
+              nm.textContent = prod.name;
+              slot.appendChild(nm);
+              if (prod.plu) {
+                const p = document.createElement("div");
+                p.className = "prod-plu";
+                p.textContent = "PLU: " + prod.plu;
+                slot.appendChild(p);
+              }
+              if (prod.desc) {
+                const d = document.createElement("div");
+                d.className = "prod-desc";
+                try {
+                  const parts = prod.desc.split("-");
+                  if (parts.length === 3) {
+                    d.textContent =
+                      "📅 " + parts[2] + "/" + parts[1] + "/" + parts[0];
+                  } else {
+                    d.textContent = prod.desc;
+                  }
+                } catch (e) {
+                  d.textContent = prod.desc;
+                }
+                slot.appendChild(d);
+                // Tampilkan batas retur jika ada RH
+                if (prod.rh && parseInt(prod.rh) > 0) {
+                  const base = new Date(prod.desc);
+                  base.setDate(base.getDate() + parseInt(prod.rh));
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const diff = Math.ceil((base - today) / 86400000);
+                  const dd = String(base.getDate()).padStart(2, "0");
+                  const mm = String(base.getMonth() + 1).padStart(2, "0");
+                  const rDiv = document.createElement("div");
+                  rDiv.className = "prod-desc";
+                  let warna = "#30d158";
+                  if (diff < 0) warna = "#ff3b30";
+                  else if (diff <= 7) warna = "#ff9500";
+                  rDiv.style.color = warna;
+                  rDiv.style.fontWeight = "600";
+                  rDiv.textContent =
+                    (diff < 0 ? "⚠ " : diff <= 7 ? "⏰ " : "✓ ") +
+                    dd +
+                    "/" +
+                    mm +
+                    " (" +
+                    (diff < 0
+                      ? "lewat " + Math.abs(diff) + "hr"
+                      : diff + "hr") +
+                    ")";
+                  slot.appendChild(rDiv);
+                }
+              }
+              if (prod.barcode) {
+                const bcw = document.createElement("div");
+                bcw.className = "prod-barcode-mini";
+                const bcc = document.createElement("canvas");
+                bcw.appendChild(bcc);
+                slot.appendChild(bcw);
+                requestAnimationFrame(() => {
+                  BC(bcc, prod.barcode, {
+                    barW: 1,
+                    height: 16,
+                    displayValue: false,
+                    margin: 0,
+                  });
+                  bcc.style.width = "100%";
+                  bcc.style.height = "18px";
+                });
+                bcw.onclick = (ev) => {
+                  ev.stopPropagation();
+                  const sc = RACK_DATA[id] && RACK_DATA[id].shelfChecks ? RACK_DATA[id].shelfChecks[ri] : null;
+                  openBarcodeModal(prod.name, prod.plu, prod.barcode, id, ri, pi, prod.rh, prod.desc, prod.image, sc, prod.shape);
+                };
+              }
+            } else {
+              const em = document.createElement("div");
+              em.className = "prod-empty-label";
+              em.textContent = "Kosong";
+              slot.appendChild(em);
+            }
+            slot.onclick = () => {
+              if (pi < row.length) editSlot(id, ri, pi);
+            };
+            slot.oncontextmenu = (e) => {
+              if (!RACK_DATA[id] || pi >= row.length) return;
+              openCtxMenu(e, id, ri, pi);
+            };
+            td.appendChild(slot);
+            tr.appendChild(td);
+          }
+
+          tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        tableWrap.appendChild(table);
+        wrap.appendChild(tableWrap);
+
+        updateSlotCount();
+      }
+
+      function makeCheckBtn(sc, key, container, label) {
+        const btn = document.createElement("button");
+        const setStyle = () => {
+          const displayLabel = key === "rapi" ? "Rapi" : "Harga";
+          if (sc[key]) {
+            btn.style.cssText =
+              "display:inline-flex;align-items:center;gap:2px;background:#30d158;border:none;border-radius:980px;padding:2px 6px;cursor:pointer;color:#fff;font-size:9px;font-weight:700;transition:all 0.15s;flex-shrink:0;font-family:var(--font);line-height:1.4;";
+            btn.textContent = "✓ " + displayLabel;
+          } else {
+            btn.style.cssText =
+              "display:inline-flex;align-items:center;gap:2px;background:none;border:1px solid var(--gray4);border-radius:980px;padding:2px 6px;cursor:pointer;color:var(--gray2);font-size:9px;font-weight:600;transition:all 0.15s;flex-shrink:0;font-family:var(--font);line-height:1.4;";
+            btn.textContent = displayLabel;
+          }
+        };
+        setStyle();
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          sc[key] = !sc[key];
+          setStyle();
+          saveData();
+        };
+        return btn;
+      }
+
+      function addShelfRow() {
+        if (!currentRak) return;
+        RACK_DATA[currentRak].shelves.push(
+          Array(RACK_DATA[currentRak].shelves[0]?.length || 5).fill(null),
+        );
+        renderShelves(currentRak);
+      }
+      function deleteShelfRow(ri) {
+        if (!currentRak || RACK_DATA[currentRak].shelves.length <= 1) return;
+        RACK_DATA[currentRak].shelves.splice(ri, 1);
+        renderShelves(currentRak);
+      }
+      function addSlotToAll() {
+        if (!currentRak) return;
+        RACK_DATA[currentRak].shelves.forEach((r) => r.push(null));
+        renderShelves(currentRak);
+      }
+      function removeSlotFromAll() {
+        if (!currentRak) return;
+        RACK_DATA[currentRak].shelves.forEach((r) => {
+          if (r.length > 1) r.pop();
+        });
+        renderShelves(currentRak);
+      }
+
+      // SHAPE DEFINITIONS
+      const SHAPES = {
+        sn: { flex: 0.6, height: 110 },
+        md: { flex: 1, height: 110 },
+        wd: { flex: 1.6, height: 110 },
+        xl: { flex: 2.4, height: 110 },
+        tl: { flex: 1, height: 160 },
+        wt: { flex: 1.6, height: 160 },
+      };
+      function applyShapeToSlot(el, shape) {
+        const sh = SHAPES[shape] || SHAPES["md"];
+        el.style.flex = sh.flex;
+        el.style.height = sh.height + "px";
+        el.style.minWidth = Math.round(sh.flex * 44) + "px";
+      }
+
+      // CONTEXT MENU
+      let _ctxCtx = null;
+      const ctxMenu = document.getElementById("ctx-menu");
+      // Pindahkan ctx-menu ke dalam detail-pane agar position:absolute bekerja
+      document.getElementById("detail-pane").appendChild(ctxMenu);
+
+      function openCtxMenu(e, rakId, ri, pi) {
+        e.preventDefault();
+        e.stopPropagation();
+        _ctxCtx = { rakId, ri, pi };
+        // mark active shape
+        const cur = RACK_DATA[rakId] && RACK_DATA[rakId].shelves[ri][pi];
+        const curShape = cur && cur.shape ? cur.shape : "md";
+        ctxMenu.querySelectorAll(".ctx-shape-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.shape === curShape);
+        });
+        // show/hide delete
+        document.getElementById("ctx-del").style.display =
+          cur && cur.name ? "flex" : "none";
+        // posisi relatif terhadap detail-pane
+        const pane = document.getElementById("detail-pane");
+        const pr = pane.getBoundingClientRect();
+        const x = Math.min(e.clientX - pr.left, pr.width - 220);
+        const y = Math.min(
+          e.clientY - pr.top,
+          pr.height - ctxMenu.offsetHeight - 10,
+        );
+        ctxMenu.style.left = x + "px";
+        ctxMenu.style.top = y + "px";
+        ctxMenu.classList.add("open");
+      }
+      function closeCtxMenu() {
+        ctxMenu.classList.remove("open");
+        _ctxCtx = null;
+      }
+      document.addEventListener("click", (e) => {
+        if (!ctxMenu.contains(e.target)) closeCtxMenu();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeCtxMenu();
+      });
+
+      document.getElementById("ctx-edit").onclick = () => {
+        if (!_ctxCtx) return;
+        const { rakId, ri, pi } = _ctxCtx;
+        closeCtxMenu();
+        editSlot(rakId, ri, pi);
+      };
+      document.getElementById("ctx-del").onclick = () => {
+        if (!_ctxCtx) return;
+        const { rakId, ri, pi } = _ctxCtx;
+        RACK_DATA[rakId].shelves[ri][pi] = null;
+        closeCtxMenu();
+        renderShelves(rakId);
+      };
+
+      function ctxSetShape(shape) {
+        if (!_ctxCtx) return;
+        const { rakId, ri, pi } = _ctxCtx;
+        if (!RACK_DATA[rakId]) return;
+        const cur = RACK_DATA[rakId].shelves[ri][pi];
+        // apply shape even to empty slots — store as shape-only placeholder
+        if (cur) {
+          cur.shape = shape;
+        } else {
+          RACK_DATA[rakId].shelves[ri][pi] = { shape };
+        }
+        // update active highlight without closing menu
+        ctxMenu.querySelectorAll(".ctx-shape-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.shape === shape);
+        });
+        renderShelves(rakId);
+      }
+
+      // SLOT EDITOR
+      let _ctx = null,
+        _img = undefined;
+      function editSlot(rakId, ri, si) {
+        const cur = RACK_DATA[rakId].shelves[ri][si];
+        _ctx = { rakId, ri, si };
+        _img = undefined;
+        document.getElementById("slot-modal-title").textContent =
+          "EDIT SLOT — PLANOGRAM RAK " +
+          rakId +
+          " · SHELVING " +
+          (ri + 1) +
+          " · BARIS " +
+          (si + 1);
+        document.getElementById("slot-name-input").value = cur ? cur.name : "";
+        document.getElementById("slot-plu-input").value = cur
+          ? cur.plu || ""
+          : "";
+        document.getElementById("slot-barcode-input").value = cur
+          ? cur.barcode || ""
+          : "";
+        document.getElementById("slot-desc-input").value = cur
+          ? cur.desc || ""
+          : "";
+        document.getElementById("slot-rh-input").value = cur
+          ? cur.rh || ""
+          : "";
+        hitungBatasRetur();
+        document.getElementById("slot-barcode-preview-wrap").style.display =
+          "none";
+        const th = document.getElementById("slot-img-thumb"),
+          ph = document.getElementById("slot-img-placeholder"),
+          rb = document.getElementById("slot-img-remove");
+        if (cur && cur.image) {
+          th.src = cur.image;
+          th.style.display = "block";
+          ph.style.display = "none";
+          rb.style.display = "flex";
+        } else {
+          th.src = "";
+          th.style.display = "none";
+          ph.style.display = "";
+          rb.style.display = "none";
+        }
+        document.getElementById("slot-modal-overlay").style.display = "flex";
+        // Load shelf checks
+        if (!RACK_DATA[rakId].shelfChecks) RACK_DATA[rakId].shelfChecks = {};
+        if (!RACK_DATA[rakId].shelfChecks[ri])
+          RACK_DATA[rakId].shelfChecks[ri] = { rapi: false, harga: false };
+        const sc = RACK_DATA[rakId].shelfChecks[ri];
+        _updateShelfCheckUI("rapi", sc.rapi);
+        _updateShelfCheckUI("harga", sc.harga);
+        // Focus name input tapi taruh cursor di akhir, bukan select-all
+        setTimeout(() => {
+          const inp = document.getElementById("slot-name-input");
+          inp.focus();
+          const len = inp.value.length;
+          inp.setSelectionRange(len, len);
+        }, 50);
+      }
+      function hitungBatasRetur() {
+        const tgl = document.getElementById("slot-desc-input").value;
+        const rh = parseInt(document.getElementById("slot-rh-input").value);
+        const el = document.getElementById("slot-retur-display");
+        if (!el) return;
+        if (tgl && rh > 0) {
+          const d = new Date(tgl);
+          d.setDate(d.getDate() + rh);
+          const dd = String(d.getDate()).padStart(2, "0");
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const yyyy = d.getFullYear();
+          // Hitung sisa hari dari hari ini
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const diff = Math.ceil((d - today) / 86400000);
+          let sisaLabel = "";
+          let warna = "var(--label-primary)";
+          if (diff < 0) {
+            sisaLabel = " · ⚠ Lewat " + Math.abs(diff) + " hari";
+            warna = "var(--sys-red)";
+          } else if (diff === 0) {
+            sisaLabel = " · Hari ini!";
+            warna = "var(--sys-orange)";
+          } else if (diff <= 7) {
+            sisaLabel = " · " + diff + " hari lagi";
+            warna = "var(--sys-orange)";
+          } else {
+            sisaLabel = " · " + diff + " hari lagi";
+            warna = "#30d158";
+          }
+          el.innerHTML = `<span style="color:var(--label-primary);font-weight:700;">${dd}/${mm}/${yyyy}</span><span style="font-size:12px;font-weight:500;color:${warna};">${sisaLabel}</span>`;
+        } else {
+          el.innerHTML = "—";
+        }
+      }
+
+      function _updateShelfCheckUI(key, val) {
+        const el = document.getElementById("slot-check-" + key);
+        const card = document.getElementById("slot-card-" + key);
+        if (el) {
+          if (val) {
+            el.style.background = "#30d158";
+            el.style.borderColor = "#30d158";
+            el.style.color = "#fff";
+          } else {
+            el.style.background = "transparent";
+            el.style.borderColor = "var(--gray4)";
+            el.style.color = "transparent";
+          }
+        }
+        if (card) {
+          if (val) {
+            card.style.background = "rgba(48,209,88,0.08)";
+            card.style.borderColor = "rgba(48,209,88,0.4)";
+          } else {
+            card.style.background = "var(--bg-secondary)";
+            card.style.borderColor = "transparent";
+          }
+        }
+      }
+      function toggleShelfCheck(key) {
+        if (!_ctx) return;
+        const { rakId, ri } = _ctx;
+        if (!RACK_DATA[rakId].shelfChecks) RACK_DATA[rakId].shelfChecks = {};
+        if (!RACK_DATA[rakId].shelfChecks[ri])
+          RACK_DATA[rakId].shelfChecks[ri] = { rapi: false, harga: false };
+        RACK_DATA[rakId].shelfChecks[ri][key] =
+          !RACK_DATA[rakId].shelfChecks[ri][key];
+        _updateShelfCheckUI(key, RACK_DATA[rakId].shelfChecks[ri][key]);
+        saveData();
+      }
+
+      function closeSlotModal() {
+        document.getElementById("slot-modal-overlay").style.display = "none";
+        _ctx = null;
+        _img = undefined;
+      }
+      document
+        .getElementById("slot-modal-overlay")
+        .addEventListener("click", (e) => {
+          if (e.target === e.currentTarget) closeSlotModal();
+        });
+      function saveSlot() {
+        if (!_ctx) return;
+        const { rakId, ri, si } = _ctx;
+        const name = document.getElementById("slot-name-input").value.trim();
+        const plu = document.getElementById("slot-plu-input").value.trim();
+        const barcode = document
+          .getElementById("slot-barcode-input")
+          .value.trim();
+        const desc = document.getElementById("slot-desc-input").value.trim();
+        const rh = document.getElementById("slot-rh-input").value.trim();
+        const cur = RACK_DATA[rakId].shelves[ri][si];
+        const color = cur
+          ? cur.color
+          : PASTEL[Math.floor(Math.random() * PASTEL.length)];
+        let image = cur ? cur.image || null : null;
+        if (_img !== undefined) image = _img;
+        const shape = cur && cur.shape ? cur.shape : "md";
+        RACK_DATA[rakId].shelves[ri][si] = name
+          ? { name, plu, barcode, desc, rh, color, image, shape }
+          : null;
+        closeSlotModal();
+        renderShelves(rakId);
+      }
+      function clearSlot() {
+        if (!_ctx) return;
+        const { rakId, ri, si } = _ctx;
+        RACK_DATA[rakId].shelves[ri][si] = null;
+        closeSlotModal();
+        renderShelves(rakId);
+      }
+      function handleSlotImageUpload(ev) {
+        const file = ev.target.files[0];
+        if (!file) return;
+        const r = new FileReader();
+        r.onload = (e) => {
+          _img = e.target.result;
+          const th = document.getElementById("slot-img-thumb"),
+            ph = document.getElementById("slot-img-placeholder"),
+            rb = document.getElementById("slot-img-remove");
+          th.src = _img;
+          th.style.display = "block";
+          ph.style.display = "none";
+          rb.style.display = "flex";
+          ev.target.value = "";
+        };
+        r.onerror = () => {
+          ev.target.value = "";
+        };
+        r.readAsDataURL(file);
+      }
+      function removeSlotImage(e) {
+        e.stopPropagation();
+        _img = null;
+        const th = document.getElementById("slot-img-thumb"),
+          ph = document.getElementById("slot-img-placeholder"),
+          rb = document.getElementById("slot-img-remove");
+        th.src = "";
+        th.style.display = "none";
+        ph.style.display = "";
+        rb.style.display = "none";
+      }
+      function previewBarcodeInline() {
+        const v = document.getElementById("slot-barcode-input").value.trim();
+        if (!v) {
+          document.getElementById("slot-barcode-preview-wrap").style.display =
+            "none";
+          return;
+        }
+        showBarcodePreview();
+      }
+      function showBarcodePreview() {
+        const v = document.getElementById("slot-barcode-input").value.trim();
+        if (!v) return;
+        const wrap = document.getElementById("slot-barcode-preview-wrap"),
+          canvas = document.getElementById("slot-barcode-preview-canvas"),
+          err = document.getElementById("slot-barcode-preview-err");
+        wrap.style.display = "block";
+        err.style.display = "none";
+        if (
+          !BC(canvas, v, {
+            barW: 2,
+            height: 60,
+            displayValue: true,
+            margin: 8,
+            fontSize: 12,
+          })
+        ) {
+          canvas.width = 0;
+          err.style.display = "block";
+        }
+      }
+      function openBarcodeModal(name, plu, barcode, rakId, ri, pi, rh, desc, image, sc, shape) {
+        // Product name
+        document.getElementById("barcode-full-prodname").textContent = name || "";
+
+        // Product image — ATAS nama, ukuran sesuai shape
+        const imgEl = document.getElementById("barcode-full-img");
+        if (image && image !== "__img__") {
+          // Map shape -> ukuran gambar (sebesar kartu barcode)
+          const SHAPE_SIZE = {
+            sn: { w: 200, h: 200 },
+            md: { w: 260, h: 260 },
+            wd: { w: 320, h: 220 },
+            xl: { w: 360, h: 200 },
+            tl: { w: 220, h: 320 },
+            wt: { w: 300, h: 320 },
+          };
+          const sz = SHAPE_SIZE[shape] || SHAPE_SIZE["md"];
+          // Responsive: max 85% of screen width
+          const maxW = Math.floor(window.innerWidth * 0.82);
+          const scale = sz.w > maxW ? maxW / sz.w : 1;
+          imgEl.src = image;
+          imgEl.style.width  = Math.floor(sz.w * scale) + "px";
+          imgEl.style.height = Math.floor(sz.h * scale) + "px";
+          imgEl.style.display = "block";
+        } else {
+          imgEl.src = "";
+          imgEl.style.display = "none";
+        }
+
+        // PLU
+        document.getElementById("barcode-full-plu").textContent = plu ? "PLU: " + plu : "";
+
+        // Barcode
+        BC(document.getElementById("barcode-full-canvas"), barcode, {
+          barW: 3,
+          height: 100,
+          displayValue: true,
+          margin: 12,
+          fontSize: 14,
+        });
+
+        // Rack location: Rak X · Shelving Y · Baris Z
+        let locParts = [];
+        if (rakId) locParts.push("Rak " + rakId);
+        if (ri !== undefined && ri !== null) locParts.push("Shelving " + (ri + 1));
+        if (pi !== undefined && pi !== null) locParts.push("Baris " + (pi + 1));
+        document.getElementById("barcode-full-location").textContent = locParts.join("  ·  ");
+
+        // RH info
+        const rhEl = document.getElementById("barcode-full-rh");
+        if (rh && desc && parseInt(rh) > 0) {
+          const d = new Date(desc);
+          d.setDate(d.getDate() + parseInt(rh));
+          const dd = String(d.getDate()).padStart(2, "0");
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const yyyy = d.getFullYear();
+          const today = new Date(); today.setHours(0,0,0,0);
+          const diff = Math.ceil((d - today) / 86400000);
+          let sisaStr = diff < 0 ? "⚠ lewat " + Math.abs(diff) + " hari" : diff + " hari lagi";
+          rhEl.textContent = "(RH " + rh + " hari  ·  jatuh " + dd + "/" + mm + "/" + yyyy + "  ·  " + sisaStr + ")";
+          rhEl.style.color = diff < 0 ? "rgba(255,59,48,0.75)" : diff <= 7 ? "rgba(255,149,0,0.85)" : "rgba(48,209,88,0.75)";
+          rhEl.style.display = "block";
+        } else {
+          rhEl.style.display = "none";
+          rhEl.textContent = "";
+        }
+
+        // Shelf check badges
+        const checksEl = document.getElementById("barcode-full-checks");
+        checksEl.innerHTML = "";
+        if (sc) {
+          const badgeStyle = "padding:4px 12px;border-radius:980px;font-size:11px;font-weight:700;";
+          if (sc.rapi) {
+            const b = document.createElement("span");
+            b.style.cssText = badgeStyle + "background:rgba(48,209,88,0.2);color:#30d158;border:1px solid rgba(48,209,88,0.35);";
+            b.textContent = "✓ Rapi";
+            checksEl.appendChild(b);
+          }
+          if (sc.harga) {
+            const b = document.createElement("span");
+            b.style.cssText = badgeStyle + "background:rgba(0,122,255,0.2);color:#5ac8fa;border:1px solid rgba(0,122,255,0.3);";
+            b.textContent = "✓ Harga";
+            checksEl.appendChild(b);
+          }
+        }
+
+        document.getElementById("barcode-full-modal").style.display = "flex";
+      }
+      function closeBarcodeModal() {
+        document.getElementById("barcode-full-modal").style.display = "none";
+      }
+      // ══════════════════════════════════════════
+      // 1. SAVE / LOAD — localStorage persistence
+      // ══════════════════════════════════════════
+      // ══════════════════════════════════════════
+      // STORE MANAGEMENT
+      // ══════════════════════════════════════════
+      const STORES_KEY = "denah_toko_stores_v1";
+      const ACTIVE_STORE_KEY = "denah_toko_active_store";
+
+      function getStores() {
+        try {
+          const raw = localStorage.getItem(STORES_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return ["Alfamidi A Yani Purwodadi"];
+      }
+      function saveStores(arr) {
+        try {
+          localStorage.setItem(STORES_KEY, JSON.stringify(arr));
+        } catch (e) {}
+      }
+      function getActiveStore() {
+        const s = localStorage.getItem(ACTIVE_STORE_KEY);
+        const stores = getStores();
+        return s && stores.includes(s) ? s : stores[0];
+      }
+      function setActiveStore(name) {
+        localStorage.setItem(ACTIVE_STORE_KEY, name);
+        document.getElementById("store-label-text").textContent = name;
+      }
+
+      function LS_KEY_FOR(store) {
+        return "denah_toko_v1_" + store;
+      }
+      let currentStore = getActiveStore();
+      const LS_KEY = {
+        get value() {
+          return LS_KEY_FOR(currentStore);
+        },
+      };
+
+      function switchStore(name) {
+        // save current first
+        saveData();
+        // switch
+        currentStore = name;
+        setActiveStore(name);
+        // reset & reload
+        Object.keys(RACK_DATA).forEach((k) => delete RACK_DATA[k]);
+        closeModal();
+        loadData();
+        updateAllDots();
+        closeStorePicker();
+      }
+
+      function renderStorePicker() {
+        const picker = document.getElementById("store-picker");
+        const stores = getStores();
+        picker.innerHTML = "";
+        stores.forEach((name) => {
+          const opt = document.createElement("div");
+          opt.className =
+            "store-opt" + (name === currentStore ? " active" : "");
+          opt.innerHTML = `<span>${name}</span>${name === currentStore ? '<span class="check">✓</span>' : ""}`;
+          opt.onclick = () => switchStore(name);
+
+          // long press to rename/delete
+          let pressTimer;
+          opt.addEventListener("pointerdown", () => {
+            pressTimer = setTimeout(() => editStorePrompt(name), 600);
+          });
+          opt.addEventListener("pointerup", () => clearTimeout(pressTimer));
+          opt.addEventListener("pointercancel", () => clearTimeout(pressTimer));
+
+          picker.appendChild(opt);
+        });
+      }
+
+      function toggleStorePicker() {
+        const picker = document.getElementById("store-picker");
+        if (picker.classList.contains("open")) {
+          closeStorePicker();
+        } else {
+          renderStorePicker();
+          picker.classList.add("open");
+        }
+      }
+      function closeStorePicker() {
+        document.getElementById("store-picker").classList.remove("open");
+      }
+      document.addEventListener("click", (e) => {
+        const toggle = document.getElementById("store-toggle");
+        const picker = document.getElementById("store-picker");
+        if (!toggle.contains(e.target) && !picker.contains(e.target)) {
+          closeStorePicker();
+        }
+      });
+
+      function addStorePrompt() {
+        closeStorePicker();
+        const name = prompt("Nama toko baru:");
+        if (!name || !name.trim()) return;
+        const stores = getStores();
+        const trimmed = name.trim();
+        if (stores.includes(trimmed)) {
+          alert("Nama toko sudah ada.");
+          return;
+        }
+        stores.push(trimmed);
+        saveStores(stores);
+        switchStore(trimmed);
+      }
+
+      function editStorePrompt(name) {
+        closeStorePicker();
+        const action = confirm(
+          `Toko: "${name}"\n\nTekan OK untuk HAPUS toko ini.\nTekan Batal untuk membatalkan.`,
+        );
+        if (!action) return;
+        const stores = getStores();
+        if (stores.length <= 1) {
+          alert("Minimal 1 toko harus ada.");
+          return;
+        }
+        const idx = stores.indexOf(name);
+        stores.splice(idx, 1);
+        saveStores(stores);
+        try {
+          localStorage.removeItem(LS_KEY_FOR(name));
+        } catch (e) {}
+        if (currentStore === name) {
+          switchStore(stores[0]);
+        }
+      }
+
+      // Init store label
+      setActiveStore(currentStore);
+
+      const LS_KEY_STR = LS_KEY_FOR(currentStore);
+
+      function saveData() {
+        try {
+          // strip image data to avoid quota issues (save flag instead)
+          const slim = {};
+          Object.entries(RACK_DATA).forEach(([id, rack]) => {
+            slim[id] = {
+              shelfChecks: rack.shelfChecks || {},
+              shelves: rack.shelves.map((row) =>
+                row.map((p) =>
+                  p ? { ...p, image: p.image ? "__img__" : null } : null,
+                ),
+              ),
+            };
+          });
+          localStorage.setItem(LS_KEY_FOR(currentStore), JSON.stringify(slim));
+        } catch (e) {
+          console.warn("Save failed", e);
+        }
+      }
+
+      function loadData() {
+        try {
+          const raw = localStorage.getItem(LS_KEY_FOR(currentStore));
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          Object.entries(saved).forEach(([id, rack]) => {
+            RACK_DATA[id] = rack;
+          });
+        } catch (e) {
+          console.warn("Load failed", e);
+        }
+      }
+
+      // Auto-save on every shelf render
+      const _origUpdateSlotCount = _updateSlotCountDOM;
+      function updateSlotCount() {
+        _origUpdateSlotCount();
+        saveData();
+        updateRakDot(currentRak);
+      }
+
+      // ══════════════════════════════════════════
+      // 2. LEGEND already in HTML
+      // ══════════════════════════════════════════
+
+      // ══════════════════════════════════════════
+      // 3. REKAP PANEL
+      // ══════════════════════════════════════════
+      let recapFilter = "all";
+
+      function toggleToolbarMenu() {
+        const m = document.getElementById("toolbar-dot-menu");
+        m.style.display = m.style.display === "block" ? "none" : "block";
+      }
+      function closeToolbarMenu() {
+        document.getElementById("toolbar-dot-menu").style.display = "none";
+      }
+      document.addEventListener("click", (e) => {
+        const btn = document.getElementById("toolbar-dot-btn");
+        const menu = document.getElementById("toolbar-dot-menu");
+        if (
+          btn &&
+          menu &&
+          !btn.contains(e.target) &&
+          !menu.contains(e.target)
+        ) {
+          closeToolbarMenu();
+        }
+      });
+
+      function toggleDotMenu() {
+        document.getElementById("dot-menu").classList.toggle("open");
+      }
+      function closeDotMenu() {
+        document.getElementById("dot-menu").classList.remove("open");
+      }
+      document.addEventListener("click", (e) => {
+        const btn = document.getElementById("dot-menu-btn");
+        const menu = document.getElementById("dot-menu");
+        if (!btn.contains(e.target) && !menu.contains(e.target)) closeDotMenu();
+      });
+
+      function openRecap() {
+        renderRecap();
+        document.getElementById("recap-panel").classList.add("open");
+      }
+      function closeRecap() {
+        document.getElementById("recap-panel").classList.remove("open");
+      }
+      document.getElementById("recap-panel").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) closeRecap();
+      });
+
+      function setRecapFilter(f, btn) {
+        recapFilter = f;
+        document
+          .querySelectorAll(".recap-filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderRecapList();
+      }
+
+      function getRecapRows() {
+        return Object.entries(RACK_DATA).map(([id, rack]) => {
+          const totalSlots = rack.shelves.reduce((a, r) => a + r.length, 0);
+          const filledSlots = rack.shelves.reduce(
+            (a, r) => a + r.filter((p) => p && p.name).length,
+            0,
+          );
+          const checks = rack.shelfChecks || {};
+          const totalRows = rack.shelves.length;
+          const rapiCount = Object.values(checks).filter((c) => c.rapi).length;
+          const hargaCount = Object.values(checks).filter(
+            (c) => c.harga,
+          ).length;
+          return {
+            id,
+            totalSlots,
+            filledSlots,
+            totalRows,
+            rapiCount,
+            hargaCount,
+          };
+        });
+      }
+
+      function renderRecap() {
+        const rows = getRecapRows();
+        // summary stats
+        document.getElementById("rs-total").textContent = rows.length;
+        document.getElementById("rs-filled").textContent = rows.filter(
+          (r) => r.filledSlots > 0,
+        ).length;
+        document.getElementById("rs-rapi").textContent = rows.filter(
+          (r) => r.rapiCount === r.totalRows && r.totalRows > 0,
+        ).length;
+        document.getElementById("rs-harga").textContent = rows.filter(
+          (r) => r.hargaCount === r.totalRows && r.totalRows > 0,
+        ).length;
+        renderRecapList();
+      }
+
+      function renderRecapList() {
+        const rows = getRecapRows();
+        const list = document.getElementById("recap-list");
+        list.innerHTML = "";
+
+        const filtered = rows.filter((r) => {
+          if (recapFilter === "all") return true;
+          if (recapFilter === "belum-rapi") return r.rapiCount < r.totalRows;
+          if (recapFilter === "belum-harga") return r.hargaCount < r.totalRows;
+          if (recapFilter === "kosong") return r.filledSlots === 0;
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          list.innerHTML =
+            '<div style="text-align:center;padding:32px;color:var(--label-secondary);font-size:15px;letter-spacing:-0.24px;">Tidak ada data</div>';
+          return;
+        }
+
+        filtered.forEach((r) => {
+          const div = document.createElement("div");
+          div.className = "recap-row";
+
+          const fillPct = r.totalSlots
+            ? Math.round((r.filledSlots / r.totalSlots) * 100)
+            : 0;
+          const rapiAll = r.rapiCount === r.totalRows && r.totalRows > 0;
+          const hargaAll = r.hargaCount === r.totalRows && r.totalRows > 0;
+
+          let fillChipClass = "chip-empty";
+          let fillLabel = "Kosong";
+          if (fillPct === 100) {
+            fillChipClass = "chip-ok";
+            fillLabel = "Penuh";
+          } else if (fillPct > 0) {
+            fillChipClass = "chip-partial";
+            fillLabel = fillPct + "% terisi";
+          }
+
+          div.innerHTML = `
+            <div class="recap-row-id">${r.id}</div>
+            <div class="recap-row-zone">${r.filledSlots}/${r.totalSlots} slot</div>
+            <div class="recap-chips">
+              <span class="recap-chip ${fillChipClass}">${fillLabel}</span>
+              <span class="recap-chip ${rapiAll ? "chip-ok" : "chip-no"}">${rapiAll ? "✓ Rapi" : "✗ Rapi"}</span>
+              <span class="recap-chip ${hargaAll ? "chip-ok" : "chip-no"}">${hargaAll ? "✓ Harga" : "✗ Harga"}</span>
+            </div>`;
+          div.style.cursor = "pointer";
+          div.addEventListener("click", () => {
+            closeRecap();
+            // open that rack modal
+            const el = [...document.querySelectorAll(".rk")].find((g) => {
+              const texts = [...g.querySelectorAll("text")];
+              return texts.some((t) => t.textContent.trim() === r.id);
+            });
+            if (el) el.click();
+          });
+          list.appendChild(div);
+        });
+      }
+
+      // ══════════════════════════════════════════
+      // 4. VISUAL DOT INDICATORS ON SVG RACKS
+      // ══════════════════════════════════════════
+      const rakGElements = {}; // id -> SVGGElement
+
+      function updateRakDot(id) {
+        if (!id || !RACK_DATA[id] || !rakGElements[id]) return;
+        const g = rakGElements[id];
+        // remove old dots
+        g.querySelectorAll(".rak-dot").forEach((d) => d.remove());
+
+        const rack = RACK_DATA[id];
+        const total = rack.shelves.reduce((a, r) => a + r.length, 0);
+        const filled = rack.shelves.reduce(
+          (a, r) => a + r.filter((p) => p && p.name).length,
+          0,
+        );
+        if (total === 0 || filled === 0) return;
+
+        const rect = g.querySelector("rect");
+        const rx = parseFloat(rect.getAttribute("x"));
+        const ry = parseFloat(rect.getAttribute("y"));
+        const rw = parseFloat(rect.getAttribute("width"));
+
+        const pct = filled / total;
+        const color =
+          pct === 1 ? "#22c55e" : pct >= 0.5 ? "#f97316" : "#fb923c";
+
+        const dot = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "circle",
+        );
+        dot.setAttribute("cx", rx + rw - 5);
+        dot.setAttribute("cy", ry + 5);
+        dot.setAttribute("r", "4");
+        dot.setAttribute("fill", color);
+        dot.setAttribute("stroke", "#fff");
+        dot.setAttribute("stroke-width", "1");
+        dot.setAttribute("class", "rak-dot");
+        g.appendChild(dot);
+      }
+
+      function updateAllDots() {
+        Object.keys(RACK_DATA).forEach((id) => updateRakDot(id));
+      }
+
+      // ══════════════════════════════════════════
+      // 5. SLOT COUNT — bigger badge style already handled in HTML
+      // ══════════════════════════════════════════
+
+      // ══════════════════════════════════════════
+      // 6. SHIFT INFO in header
+      // ══════════════════════════════════════════
+      // 7. EXPORT — download JSON data
+      // ══════════════════════════════════════════
+      function exportData() {
+        const rows = getRecapRows ? getRecapRows() : [];
+        const out = {
+          exported: new Date().toISOString(),
+          racks: Object.entries(RACK_DATA).map(([id, rack]) => ({
+            id,
+            totalSlots: rack.shelves.reduce((a, r) => a + r.length, 0),
+            filledSlots: rack.shelves.reduce(
+              (a, r) => a + r.filter((p) => p && p.name).length,
+              0,
+            ),
+            shelfChecks: rack.shelfChecks || {},
+            products: rack.shelves.flatMap((row) =>
+              row
+                .filter((p) => p && p.name)
+                .map((p) => ({
+                  name: p.name,
+                  plu: p.plu,
+                  barcode: p.barcode,
+                  desc: p.desc,
+                })),
+            ),
+          })),
+        };
+        const blob = new Blob([JSON.stringify(out, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download =
+          "rekap_toko_" + new Date().toISOString().slice(0, 10) + ".json";
+        a.click();
+      }
+
+      // ══════════════════════════════════════════
+      // 8. RACK ELEMENT REGISTRY — patch rk() after SVG drawn
+      //    Store g elements by label for dot updates
+      // ══════════════════════════════════════════
+      // We collect all rk elements after page loads
+      function indexRakElements() {
+        document.querySelectorAll("#fp .rk").forEach((g) => {
+          const texts = [...g.querySelectorAll("text")];
+          if (texts.length > 0) {
+            const id = texts.map((t) => t.textContent.trim()).join("\n");
+            if (id) rakGElements[id] = g;
+          }
+        });
+      }
+      // Run after SVG renders
+      setTimeout(() => {
+        indexRakElements();
+        loadData();
+        updateAllDots();
+      }, 100);
+    </script>
+  </body>
+</html>
