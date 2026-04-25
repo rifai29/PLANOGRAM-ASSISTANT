@@ -2730,20 +2730,61 @@
             };
         })();
 
-        // DENAH SVG
+        // DENAH SVG — tiap zona 1 warna dasar, tiap rak beda shade terang/gelap
+        // Helper: buat shade dari hue dasar, level 0=paling terang, n=paling gelap
+        function mkShade(h, s, lBase, lStep, idx, name) {
+            // h=hue(0-360), s=saturation(%), lBase=lightness start(%), lStep=step per rack
+            const l = Math.max(20, lBase - idx * lStep);
+            const lText = l < 55 ? 95 : 15; // text putih kalau gelap, hitam kalau terang
+            const lStroke = Math.max(10, l - 25);
+            function hsl(hh, ss, ll) {
+                const c = (1 - Math.abs(2 * ll / 100 - 1)) * ss / 100;
+                const x = c * (1 - Math.abs((hh / 60) % 2 - 1));
+                const m = ll / 100 - c / 2;
+                let r, g, b;
+                if (hh < 60) { r = c; g = x; b = 0; }
+                else if (hh < 120) { r = x; g = c; b = 0; }
+                else if (hh < 180) { r = 0; g = c; b = x; }
+                else if (hh < 240) { r = 0; g = x; b = c; }
+                else if (hh < 300) { r = x; g = 0; b = c; }
+                else { r = c; g = 0; b = x; }
+                const toHex = v => Math.round((v + m) * 255).toString(16).padStart(2, "0");
+                return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+            }
+            return {
+                f: hsl(h, s, l),
+                s: hsl(h, s, lStroke),
+                t: hsl(h, 20, lText),
+                n: name
+            };
+        }
+
+        // Definisi zona: [hue, saturation, lightnessStart, lightnessStep, nama]
+        // Tiap zona 1 hue, tiap rak dalam zona dapat index shade berbeda
+        const ZONA = {
+            NF: [210, 70, 90, 4, "Non-Makanan"],
+            FD: [140, 60, 90, 4, "Makanan"],
+            SN: [0, 70, 90, 4, "Snack / Samboys"],
+            GN: [270, 60, 90, 4, "Gondola / Display"],
+            CH: [45, 80, 92, 4, "Chiller / Fresh"],
+            CS: [185, 70, 90, 4, "Kasir / ATM"],
+            WL: [255, 60, 90, 4, "Dinding / Wall"],
+        };
+
+        function zShade(zonaKey, idx) {
+            const [h, s, lBase, lStep, name] = ZONA[zonaKey];
+            return mkShade(h, s, lBase, lStep, idx, name);
+        }
+
         const Z = {
-            nf: { f: "#A8C8F8", s: "#1A56B0", t: "#0D2E6B", n: "Non-Makanan" },
-            fd: { f: "#A8E6B8", s: "#1A7A3A", t: "#0A4020", n: "Makanan" },
-            sn: { f: "#FFB3B3", s: "#CC1A1A", t: "#7A0A0A", n: "Snack / Samboys" },
-            ch: { f: "#FFEEA8", s: "#B89000", t: "#7A5E00", n: "Chiller / Fresh" },
-            gn: {
-                f: "#F0A8D8",
-                s: "#A01878",
-                t: "#600848",
-                n: "Gondola / Display",
-            },
-            wl: { f: "#D0A8F8", s: "#6010C0", t: "#380870", n: "Dinding / Wall" },
-            cs: { f: "#A8EEF8", s: "#0878A0", t: "#044860", n: "Kasir / ATM" },
+            // Legacy zones untuk rak pinggir (tetap pakai warna asal)
+            nf: zShade("NF", 3),
+            fd: zShade("FD", 3),
+            sn: zShade("SN", 3),
+            ch: zShade("CH", 3),
+            gn: zShade("GN", 3),
+            wl: zShade("WL", 3),
+            cs: zShade("CS", 3),
             em: { f: "#EFEFEF", s: "#D0D0D0", t: "#A0A0A0", n: "" },
         };
         const fpSvg = document.getElementById("fp"),
@@ -2854,42 +2895,19 @@
                 fill: "#F9F9F9",
             }),
         );
-        const topRacks = [
-            { id: "IA5", z: Z.nf },
-            { id: "HA1", z: Z.fd },
-            { id: "HA2", z: Z.sn },
-            { id: "HA3", z: Z.ch },
-            { id: "HA4", z: Z.gn },
-            { id: "HA5", z: Z.cs },
-            { id: "HA6", z: Z.nf },
-            { id: "HA7", z: Z.fd },
-            { id: "HA8", z: Z.sn },
-            { id: "HB1", z: Z.ch },
-            { id: "VJT", z: Z.gn },
-            { id: "VKT", z: Z.cs },
-        ];
-        topRacks.forEach(({ id, z }, i) =>
-            rk(fpSvg, X0 + i * CW, 12, CW, CH, id, id ? z : Z.em, 2),
+        // Baris atas — satu warna (oranye), urut terang→gelap kiri ke kanan
+        const topRackIds = ["IA5", "HA1", "HA2", "HA3", "HA4", "HA5", "HA6", "HA7", "HA8", "HB1", "VJT", "VKT"];
+        topRackIds.forEach((id, i) =>
+            rk(fpSvg, X0 + i * CW, 12, CW, CH, id, zShade("SN", i), 2)
         );
-        rk(fpSvg, RX - RW, 12, RW, CH, "VLT", Z.wl, 2);
-        rkCorner(fpSvg, RX, 12, RW, CH, "ZHH", Z.cs, { tr: 12 });
+        rk(fpSvg, RX - RW, 12, RW, CH, "VLT", zShade("SN", 12), 2);
+        rkCorner(fpSvg, RX, 12, RW, CH, "ZHH", zShade("SN", 13), { tr: 12 });
+
+        // Kolom kiri — satu warna (teal/CS), urut terang→gelap atas ke bawah
         let ly = 12 + CH;
-        const leftRacks = [
-            { id: "IA4", z: Z.nf },
-            { id: "IA3", z: Z.fd },
-            { id: "IA2", z: Z.sn },
-            { id: "IA1", z: Z.ch },
-            { id: "JA1", z: Z.gn },
-            { id: "SA3", z: Z.cs },
-            { id: "SA2", z: Z.nf },
-            { id: "SA1", z: Z.fd },
-            { id: "AA5", z: Z.sn },
-            { id: "AA4", z: Z.ch },
-            { id: "AA3", z: Z.gn },
-            { id: "AA2", z: Z.cs },
-            { id: "AA1", z: Z.nf },
-        ];
-        leftRacks.forEach(({ id, z }) => {
+        const leftRackIds = ["IA4", "IA3", "IA2", "IA1", "JA1", "SA3", "SA2", "SA1", "AA5", "AA4", "AA3", "AA2", "AA1"];
+        leftRackIds.forEach((id, i) => {
+            const z = zShade("CS", i);
             if (id === "AA1") {
                 rkCorner(fpSvg, 12, ly, RW, CH, id, z, { bl: 12 });
             } else {
@@ -2897,31 +2915,14 @@
             }
             ly += CH;
         });
+
+        // Kolom kanan — satu warna flat sama seperti ZHH
         let ry = 12 + CH;
-        const rightRacks = [
-            { id: "VJ1", z: Z.fd },
-            { id: "VI1", z: Z.sn },
-            { id: "VF2", z: Z.ch },
-            { id: "VF1", z: Z.gn },
-            { id: "VD1", z: Z.cs },
-            { id: "VB4", z: Z.nf },
-            { id: "VB3", z: Z.fd },
-            { id: "VB2", z: Z.sn },
-            { id: "VB1", z: Z.ch },
-            { id: "YB1", z: Z.gn },
-            { id: "YB2", z: Z.cs },
-            { id: "YG1", z: Z.nf },
-            { id: "YG2", z: Z.fd },
-        ];
-        rightRacks.forEach(({ id, z }) => {
-            rk(fpSvg, RX, ry, RW, CH, id, z, 2);
+        const rightRackIds = ["VJ1", "VI1", "VF2", "VF1", "VD1", "VB4", "VB3", "VB2", "VB1", "YB1", "YB2", "YG1", "YG2"];
+        rightRackIds.forEach((id) => {
+            rk(fpSvg, RX, ry, RW, CH, id, zShade("SN", 13), 2);
             ry += CH;
         });
-        const fd = (id) => ({ id, z: Z.fd }),
-            nf = (id) => ({ id, z: Z.nf }),
-            sn = (id) => ({ id, z: Z.sn }),
-            gn = (id) => ({ id, z: Z.gn }),
-            ch = (id) => ({ id, z: Z.ch });
         function fillRow(y, items) {
             for (let i = 0; i < 12; i++) {
                 const it = items[i];
@@ -2939,69 +2940,160 @@
             ySOS = ySN + CH,
             yCHR = ySOS + CH,
             yBOT = yCHR + CH * 2;
-        fillRow(
-            yNF1,
-            [
-                "LA1",
-                "IB1",
-                "OB1",
-                "NA3",
-                "NA2",
-                "NA1",
-                "LA2",
-                "LA3",
-                "LE1",
-                "LF2",
-            ].map(nf),
-        );
-        fillRow(
-            yNF2,
-            [
-                "LF1",
-                "LB2",
-                "LB1",
-                "LD1",
-                "LD2",
-                "LC1",
-                "LC2",
-                "LC3",
-                "OA1",
-                "OA2",
-            ].map(nf),
-        );
-        fillRow(yFD1, ["JD3", "JD2", "JD1", "KA2", "KA1", "UAI", "MA1"].map(fd));
-        fillRow(yFD2, ["JC1", "JC2", "JB1", "JB2", "JB3", "UA2", "PA1"].map(fd));
-        fillRow(yGN, ["ZI4", "ZI1", "ZI3", "ZI2", "ZL1", "ZK1", "ZK2"].map(gn));
-        fillRow(
-            yFD3,
-            ["EA1", "IC2", "IC1", "RA1", "OD2", "OD1", "TA2", "TA1", "ID1"]
-                .map(fd)
-                .concat([gn("ZM1")]),
-        );
-        fillRow(yFD4, ["EA2", "EA3", "EA4", "EA5", "GA3", "GA2", "GA1"].map(fd));
-        fillRow(ySN, [
-            sn("BA3"),
-            sn("BA2"),
-            sn("BA1"),
-            sn("FB1"),
-            fd("FA3"),
-            fd("FA2"),
-            fd("FA1"),
-            fd("FC1"),
+
+        // Baris 1 — Non-Makanan (Biru), shade index 0..9
+        fillRow(yNF1, [
+            { id: "LA1", z: zShade("NF", 0) },
+            { id: "IB1", z: zShade("NF", 1) },
+            { id: "OB1", z: zShade("NF", 2) },
+            { id: "NA3", z: zShade("NF", 3) },
+            { id: "NA2", z: zShade("NF", 4) },
+            { id: "NA1", z: zShade("NF", 5) },
+            { id: "LA2", z: zShade("NF", 6) },
+            { id: "LA3", z: zShade("NF", 7) },
+            { id: "LE1", z: zShade("NF", 8) },
+            { id: "LF2", z: zShade("NF", 9) },
         ]);
-        fillRow(ySOS, ["DA1", "DA2", "DA3", "CB1", "CA1", "CA2", "CA3"].map(fd));
-        fillRow(
-            yCHR,
-            ["AKA", "AK0", "AK9", "AK8", "AK7", "AK6", "AK5", "AK4"].map(ch),
-        );
-        fillRow(
-            yCHR + CH,
-            ["AK3", "AK2", "AK1", "YA4", "YA3", "YA2", "YA1"]
-                .map(ch)
-                .concat([gn("YN1")]),
-        );
-        fillRow(yBOT, ["YH1", "YI1", "YJ1", "YL1", "YL2", "YL3", "YL4"].map(gn));
-        fillRow(yBOT + CH, ["YL5", "YL6", "YM1", "YN2", "YO1", "YO2"].map(gn));
+
+        // Baris 2 — Non-Makanan (Biru), shade index lanjut 0..9
+        fillRow(yNF2, [
+            { id: "LF1", z: zShade("NF", 0) },
+            { id: "LB2", z: zShade("NF", 1) },
+            { id: "LB1", z: zShade("NF", 2) },
+            { id: "LD1", z: zShade("NF", 3) },
+            { id: "LD2", z: zShade("NF", 4) },
+            { id: "LC1", z: zShade("NF", 5) },
+            { id: "LC2", z: zShade("NF", 6) },
+            { id: "LC3", z: zShade("NF", 7) },
+            { id: "OA1", z: zShade("NF", 8) },
+            { id: "OA2", z: zShade("NF", 9) },
+        ]);
+
+        // Baris 3 — Makanan (Hijau), shade 0..6
+        fillRow(yFD1, [
+            { id: "JD3", z: zShade("FD", 0) },
+            { id: "JD2", z: zShade("FD", 1) },
+            { id: "JD1", z: zShade("FD", 2) },
+            { id: "KA2", z: zShade("FD", 3) },
+            { id: "KA1", z: zShade("FD", 4) },
+            { id: "UAI", z: zShade("FD", 5) },
+            { id: "MA1", z: zShade("FD", 6) },
+        ]);
+
+        // Baris 4 — Makanan (Hijau), shade 0..6
+        fillRow(yFD2, [
+            { id: "JC1", z: zShade("FD", 0) },
+            { id: "JC2", z: zShade("FD", 1) },
+            { id: "JB1", z: zShade("FD", 2) },
+            { id: "JB2", z: zShade("FD", 3) },
+            { id: "JB3", z: zShade("FD", 4) },
+            { id: "UA2", z: zShade("FD", 5) },
+            { id: "PA1", z: zShade("FD", 6) },
+        ]);
+
+        // Baris 5 — Gondola (Ungu), shade 0..6
+        fillRow(yGN, [
+            { id: "ZI4", z: zShade("GN", 0) },
+            { id: "ZI1", z: zShade("GN", 1) },
+            { id: "ZI3", z: zShade("GN", 2) },
+            { id: "ZI2", z: zShade("GN", 3) },
+            { id: "ZL1", z: zShade("GN", 4) },
+            { id: "ZK1", z: zShade("GN", 5) },
+            { id: "ZK2", z: zShade("GN", 6) },
+        ]);
+
+        // Baris 6 — Makanan (Hijau) + ZM1 Gondola (Ungu), shade 0..9
+        fillRow(yFD3, [
+            { id: "EA1", z: zShade("FD", 0) },
+            { id: "IC2", z: zShade("FD", 1) },
+            { id: "IC1", z: zShade("FD", 2) },
+            { id: "RA1", z: zShade("FD", 3) },
+            { id: "OD2", z: zShade("FD", 4) },
+            { id: "OD1", z: zShade("FD", 5) },
+            { id: "TA2", z: zShade("FD", 6) },
+            { id: "TA1", z: zShade("FD", 7) },
+            { id: "ID1", z: zShade("FD", 8) },
+            { id: "ZM1", z: zShade("GN", 0) },
+        ]);
+
+        // Baris 7 — Makanan (Hijau), shade 0..6
+        fillRow(yFD4, [
+            { id: "EA2", z: zShade("FD", 0) },
+            { id: "EA3", z: zShade("FD", 1) },
+            { id: "EA4", z: zShade("FD", 2) },
+            { id: "EA5", z: zShade("FD", 3) },
+            { id: "GA3", z: zShade("FD", 4) },
+            { id: "GA2", z: zShade("FD", 5) },
+            { id: "GA1", z: zShade("FD", 6) },
+        ]);
+
+        // Baris 8 — Snack (Pink/Merah) + Makanan (Hijau)
+        fillRow(ySN, [
+            { id: "BA3", z: zShade("SN", 0) },
+            { id: "BA2", z: zShade("SN", 1) },
+            { id: "BA1", z: zShade("SN", 2) },
+            { id: "FB1", z: zShade("SN", 3) },
+            { id: "FA3", z: zShade("FD", 0) },
+            { id: "FA2", z: zShade("FD", 1) },
+            { id: "FA1", z: zShade("FD", 2) },
+            { id: "FC1", z: zShade("FD", 3) },
+        ]);
+
+        // Baris 9 — Makanan (Hijau), shade 0..6
+        fillRow(ySOS, [
+            { id: "DA1", z: zShade("FD", 0) },
+            { id: "DA2", z: zShade("FD", 1) },
+            { id: "DA3", z: zShade("FD", 2) },
+            { id: "CB1", z: zShade("FD", 3) },
+            { id: "CA1", z: zShade("FD", 4) },
+            { id: "CA2", z: zShade("FD", 5) },
+            { id: "CA3", z: zShade("FD", 6) },
+        ]);
+
+        // Baris 10 — Chiller (Kuning), shade 0..7
+        fillRow(yCHR, [
+            { id: "AKA", z: zShade("CH", 0) },
+            { id: "AK0", z: zShade("CH", 1) },
+            { id: "AK9", z: zShade("CH", 2) },
+            { id: "AK8", z: zShade("CH", 3) },
+            { id: "AK7", z: zShade("CH", 4) },
+            { id: "AK6", z: zShade("CH", 5) },
+            { id: "AK5", z: zShade("CH", 6) },
+            { id: "AK4", z: zShade("CH", 7) },
+        ]);
+
+        // Baris 11 — Chiller (Kuning) + YN1 Gondola (Ungu)
+        fillRow(yCHR + CH, [
+            { id: "AK3", z: zShade("CH", 0) },
+            { id: "AK2", z: zShade("CH", 1) },
+            { id: "AK1", z: zShade("CH", 2) },
+            { id: "YA4", z: zShade("CH", 3) },
+            { id: "YA3", z: zShade("CH", 4) },
+            { id: "YA2", z: zShade("CH", 5) },
+            { id: "YA1", z: zShade("CH", 6) },
+            { id: "YN1", z: zShade("GN", 0) },
+        ]);
+
+        // Baris 12 — Gondola (Ungu), shade 0..6
+        fillRow(yBOT, [
+            { id: "YH1", z: zShade("GN", 0) },
+            { id: "YI1", z: zShade("GN", 1) },
+            { id: "YJ1", z: zShade("GN", 2) },
+            { id: "YL1", z: zShade("GN", 3) },
+            { id: "YL2", z: zShade("GN", 4) },
+            { id: "YL3", z: zShade("GN", 5) },
+            { id: "YL4", z: zShade("GN", 6) },
+        ]);
+
+        // Baris 13 — Gondola (Ungu), shade 0..5
+        fillRow(yBOT + CH, [
+            { id: "YL5", z: zShade("GN", 0) },
+            { id: "YL6", z: zShade("GN", 1) },
+            { id: "YM1", z: zShade("GN", 2) },
+            { id: "YN2", z: zShade("GN", 3) },
+            { id: "YO1", z: zShade("GN", 4) },
+            { id: "YO2", z: zShade("GN", 5) },
+        ]);
         fpSvg.appendChild(
             mkEl(
                 "text",
